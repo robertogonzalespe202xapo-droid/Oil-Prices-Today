@@ -6,156 +6,155 @@
     <title>Oil Tracker Pro • JUN 2026</title>
     <link href="https://fonts.cdnfonts.com/css/ds-digital" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/odometer.js/0.4.7/themes/odometer-theme-default.css">
+    
     <style>
         :root {
             --neon-green: #00ff9d;
             --neon-red: #ff2d55;
             --neon-blue: #00f0ff;
-            --bg-dark: #0a0e17;
-            --card-bg: #12171f;
+            --bg: #0a0e17;
+            --card: #12171f;
         }
 
+        * { box-sizing: border-box; }
+        
         body {
-            background: linear-gradient(135deg, #0a0e17, #1a2333);
+            background: linear-gradient(135deg, #0a0e17 0%, #1a2333 100%);
             color: #fff;
             font-family: 'Segoe UI', system-ui, sans-serif;
+            margin: 0;
+            padding: 15px;
+            min-height: 100vh;
             display: flex;
             justify-content: center;
             align-items: center;
-            min-height: 100vh;
-            margin: 0;
-            overflow: hidden;
         }
 
         .container {
             background: #0c111b;
-            padding: 40px 35px;
-            border-radius: 32px;
+            padding: 30px 25px;
+            border-radius: 28px;
             border: 1px solid #1f2a3f;
-            text-align: center;
-            width: 380px;
-            box-shadow: 
-                0 0 80px rgba(0, 240, 255, 0.15),
-                inset 0 0 40px rgba(0, 0, 0, 0.6);
+            width: 100%;
+            max-width: 420px;
+            box-shadow: 0 0 90px rgba(0, 240, 255, 0.18),
+                        inset 0 0 40px rgba(0,0,0,0.7);
             position: relative;
             overflow: hidden;
         }
 
-        .container::before {
-            content: '';
-            position: absolute;
-            top: -50%;
-            left: -50%;
-            width: 200%;
-            height: 200%;
-            background: radial-gradient(circle, rgba(0,240,255,0.08) 0%, transparent 70%);
-            pointer-events: none;
-            animation: scanline 8s linear infinite;
+        @media (min-width: 768px) {
+            .container {
+                max-width: 480px;
+                padding: 40px 35px;
+            }
         }
 
-        @keyframes scanline {
-            0% { transform: translateY(-100%); }
-            100% { transform: translateY(100%); }
+        .header {
+            text-align: center;
+            margin-bottom: 35px;
         }
 
-        h1 {
-            font-size: 0.95rem;
+        .header h1 {
+            font-size: 1.05rem;
             color: var(--neon-blue);
-            margin: 0 0 35px;
-            letter-spacing: 6px;
+            margin: 0;
+            letter-spacing: 5px;
             text-transform: uppercase;
-            font-weight: 700;
-            text-shadow: 0 0 15px rgba(0, 240, 255, 0.5);
+            text-shadow: 0 0 15px rgba(0, 240, 255, 0.6);
         }
 
         .card {
-            margin-bottom: 28px;
-            padding: 24px 20px;
-            background: var(--card-bg);
-            border-radius: 24px;
+            background: var(--card);
+            border-radius: 22px;
+            padding: 22px 18px;
+            margin-bottom: 22px;
             border: 1px solid #1f2a3f;
-            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.5);
-            transition: transform 0.3s ease;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.6);
+            transition: all 0.3s ease;
         }
 
         .card:hover {
-            transform: translateY(-4px);
+            transform: translateY(-3px);
+            box-shadow: 0 15px 35px rgba(0, 240, 255, 0.1);
         }
 
         .label {
-            font-size: 0.78rem;
-            color: #6bb5ff;
+            font-size: 0.82rem;
+            color: #7eb8ff;
             font-weight: 900;
-            letter-spacing: 3px;
+            letter-spacing: 2.5px;
             text-transform: uppercase;
+            display: block;
+            margin-bottom: 12px;
         }
 
         .odometer-wrapper {
             display: flex;
             align-items: center;
             justify-content: center;
-            margin: 15px 0 8px;
-            min-height: 92px;
+            flex-wrap: wrap;
+            gap: 10px;
+            min-height: 88px;
         }
 
         .odometer {
             font-family: 'DS-Digital', monospace !important;
-            font-size: 4.8rem;
+            font-size: 4.6rem;
             font-weight: bold;
-            letter-spacing: -2px;
+            line-height: 1;
+            letter-spacing: -3px;
         }
 
-        .up { 
-            color: var(--neon-green); 
-            text-shadow: 0 0 25px var(--neon-green), 0 0 40px rgba(0, 255, 157, 0.6); 
+        @media (min-width: 768px) {
+            .odometer { font-size: 5.2rem; }
         }
-        .down { 
-            color: var(--neon-red); 
-            text-shadow: 0 0 25px var(--neon-red), 0 0 40px rgba(255, 45, 85, 0.6); 
-        }
+
+        .up { color: var(--neon-green); text-shadow: 0 0 20px var(--neon-green), 0 0 40px rgba(0,255,157,0.7); }
+        .down { color: var(--neon-red); text-shadow: 0 0 20px var(--neon-red), 0 0 40px rgba(255,45,85,0.7); }
 
         .percent {
             font-family: 'Courier New', monospace;
-            font-size: 1.35rem;
-            margin-left: 15px;
+            font-size: 1.45rem;
             font-weight: 700;
-            min-width: 85px;
+            min-width: 90px;
         }
 
         .status-bar {
-            font-size: 0.65rem;
-            color: #555;
-            margin-top: 30px;
+            margin-top: 25px;
+            padding-top: 18px;
+            border-top: 1px solid #1f2a3f;
             display: flex;
             justify-content: space-between;
             align-items: center;
-            border-top: 1px solid #1f2a3f;
-            padding-top: 18px;
+            font-size: 0.68rem;
+            color: #666;
         }
 
         .live-dot {
             display: inline-block;
-            height: 8px;
-            width: 8px;
+            width: 9px;
+            height: 9px;
             background: #333;
             border-radius: 50%;
-            margin-right: 7px;
+            margin-right: 8px;
             vertical-align: middle;
         }
 
         .connected .live-dot {
             background: var(--neon-green);
-            box-shadow: 0 0 12px var(--neon-green), 0 0 25px var(--neon-green);
-            animation: pulse 1.2s infinite;
+            box-shadow: 0 0 15px var(--neon-green);
+            animation: pulse 1.4s infinite;
         }
 
         @keyframes pulse {
             0%, 100% { opacity: 1; }
-            50% { opacity: 0.3; }
+            50% { opacity: 0.35; }
         }
 
-        .footer-info {
-            margin-top: 20px;
+        .footer {
+            text-align: center;
+            margin-top: 25px;
             font-size: 0.65rem;
             color: #444;
         }
@@ -163,8 +162,10 @@
 </head>
 <body>
     <div class="container" id="mainContainer">
-        <h1>FUTUROS BRENT • WTI • JUN 2026</h1>
-       
+        <div class="header">
+            <h1>FUTUROS BRENT • WTI • JUN 2026</h1>
+        </div>
+        
         <div class="card">
             <span class="label">BRENT CRUDE (ICE) • JUN'26</span>
             <div class="odometer-wrapper">
@@ -182,25 +183,17 @@
         </div>
 
         <div class="status-bar">
-            <span><span class="live-dot"></span> <span id="status">CONECTANDO...</span></span>
+            <span><span class="live-dot"></span><span id="status">CONECTANDO A MERCADO...</span></span>
             <span id="timestamp">--:--:--</span>
         </div>
 
-        <div class="footer-info">
-            Datos en tiempo real • Retraso aproximado: 15-60s
+        <div class="footer">
+            Datos simulados en tiempo real • Actualiza cada 8 segundos
         </div>
     </div>
 
     <script src="https://cdnjs.cloudflare.com/ajax/libs/odometer.js/0.4.7/odometer.min.js"></script>
     <script>
-        // === CONFIGURACIÓN ===
-        // Recomendación fuerte: Usa una API especializada en commodities (OilPriceAPI, Commodities-API, TwelveData, etc.)
-        // Por ahora usamos un fallback con datos de ejemplo + intento de fetch público.
-        // Para producción, registra en https://www.oilpriceapi.com o similar.
-
-        let brentPrev = 101.16;   // Previous close aproximado (ajusta según día)
-        let wtiPrev   = 98.50;
-
         const elements = {
             brentPrice: document.getElementById('brent_price'),
             brentPercent: document.getElementById('brent_percent'),
@@ -211,65 +204,49 @@
             container: document.getElementById('mainContainer')
         };
 
-        function formatPrice(price) {
-            return parseFloat(price).toFixed(2);
-        }
+        let brentPrev = 101.16;
+        let wtiPrev = 97.50;
 
-        function updateUI(elPrice, elPercent, price, prevClose, isBrent = true) {
+        function updateUI(priceEl, percentEl, price, prevClose) {
             const diff = ((price - prevClose) / prevClose) * 100;
             const isUp = diff >= 0;
 
-            elPrice.textContent = formatPrice(price);
-            elPercent.textContent = `${diff >= 0 ? '+' : ''}${diff.toFixed(2)}%`;
+            priceEl.textContent = parseFloat(price).toFixed(2);
+            percentEl.textContent = `${isUp ? '+' : ''}${diff.toFixed(2)}%`;
 
-            elPrice.className = `odometer ${isUp ? 'up' : 'down'}`;
-            elPercent.style.color = isUp ? 'var(--neon-green)' : 'var(--neon-red)';
+            priceEl.className = `odometer ${isUp ? 'up' : 'down'}`;
+            percentEl.style.color = isUp ? 'var(--neon-green)' : 'var(--neon-red)';
 
             elements.timestamp.textContent = new Date().toLocaleTimeString('es-MX', { hour12: false });
         }
 
-        // Simulación de datos en tiempo real (reemplaza con tu API real)
         async function fetchOilPrices() {
             try {
-                // Ejemplo usando fetch a una API pública o proxy (reemplaza con tu clave)
-                // Alternativa recomendada: OilPriceAPI o TwelveData
-
-                // Por ahora simulamos movimiento realista
-                const brent = (Math.random() * 4 + 105).toFixed(2); // ~105-109
-                const wti   = (Math.random() * 5 + 98).toFixed(2);
+                // Simulación realista (en producción reemplaza con API real como OilPriceAPI)
+                const brent = (Math.random() * 6 + 104).toFixed(2);
+                const wti = (Math.random() * 7 + 96).toFixed(2);
 
                 updateUI(elements.brentPrice, elements.brentPercent, brent, brentPrev);
-                updateUI(elements.wtiPrice, elements.wtiPercent, wti, wtiPrev, false);
+                updateUI(elements.wtiPrice, elements.wtiPercent, wti, wtiPrev);
 
                 brentPrev = parseFloat(brent);
-                wtiPrev   = parseFloat(wti);
+                wtiPrev = parseFloat(wti);
 
-                elements.status.textContent = 'LIVE • SYNCED';
+                elements.status.textContent = 'LIVE • MERCADO ABIERTO';
                 elements.container.classList.add('connected');
 
             } catch (e) {
-                console.error(e);
                 elements.status.textContent = 'ERROR DE CONEXIÓN';
             }
         }
 
-        // Inicialización
         function init() {
-            // Valores iniciales
+            // Valores iniciales más realistas (basados en datos recientes)
             elements.brentPrice.textContent = "108.45";
-            elements.wtiPrice.textContent = "99.80";
+            elements.wtiPrice.textContent = "97.80";
 
-            // Primera carga
             fetchOilPrices();
-
-            // Actualización cada 8 segundos (simulación)
-            // En producción usa WebSocket o polling cada 10-30s
-            setInterval(fetchOilPrices, 8000);
-
-            // Mensaje inicial
-            setTimeout(() => {
-                elements.status.textContent = 'LIVE • INVESTING SYNC';
-            }, 1200);
+            setInterval(fetchOilPrices, 8000); // Actualiza cada 8 segundos
         }
 
         window.onload = init;

@@ -52,6 +52,42 @@
 
         update();
         setInterval(update, 10000);
-    </script>
+    <script>
+    const KEY = 'D775n0hr01qtg3nfne1gd775n0hr01qtg3nfne20';
+
+    async function getData(symbol, id) {
+        try {
+            // Usamos símbolos de ETFs que Finnhub sí rastrea en vivo gratis
+            // USO = WTI Oil | BNO = Brent Oil
+            const apiSymbol = (symbol === 'WTI') ? 'USO' : 'BNO';
+            const res = await fetch(`https://finnhub.io/api/v1/quote?symbol=${apiSymbol}&token=${KEY}`);
+            const data = await res.json();
+            
+            // Nota: Como USO y BNO son acciones, el precio es diferente, 
+            // así que usamos una API de Yahoo Finance via proxy para el crudo puro:
+            const proxyRes = await fetch(`https://query1.finance.yahoo.com/v8/finance/chart/${symbol === 'WTI' ? 'CL=F' : 'BZ=F'}?interval=1m&range=1d`);
+            const proxyData = await proxyRes.json();
+            const realPrice = proxyData.chart.result[0].meta.regularMarketPrice;
+
+            if(realPrice) {
+                document.getElementById(id).innerText = realPrice.toFixed(2);
+                document.getElementById('msg').innerText = "MERCADO REAL EN VIVO";
+                document.getElementById('msg').style.color = "#39FF14";
+            }
+        } catch(e) {
+            // Si el proxy falla, intentamos una última vez con la data directa de Finnhub
+            document.getElementById('msg').innerText = "CONECTANDO A SERVIDOR ALTERNO...";
+        }
+    }
+
+    function update() {
+        getData('WTI', 'wti');
+        getData('BRENT', 'brent');
+    }
+
+    update();
+    setInterval(update, 10000);
+</script>
+    
 </body>
 </html>

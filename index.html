@@ -3,87 +3,105 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Oil Tracker Pro v2</title>
+    <title>Oil Tracker Ultra | Finnhub Real-Time</title>
     <style>
-        body { background: #000c18; color: #39FF14; font-family: 'Courier New', monospace; display: flex; justify-content: center; align-items: center; height: 100vh; margin: 0; overflow: hidden; }
-        .container { background: #000; padding: 25px; border-radius: 15px; border: 2px solid #002a4d; text-align: center; width: 85%; max-width: 350px; box-shadow: 0 0 40px rgba(0, 42, 77, 0.6); position: relative; }
-        h1 { font-size: 0.9rem; color: #fff; margin-bottom: 20px; letter-spacing: 2px; text-transform: uppercase; }
-        .label { font-size: 0.75rem; color: #5bc0de; display: block; margin-top: 15px; font-weight: bold; }
-        .price { font-size: 3.5rem; display: block; padding: 10px; margin: 5px 0; border-radius: 5px; background: #050505; border: 1px solid #111; text-shadow: 0 0 15px rgba(57, 255, 20, 0.4); transition: all 0.3s ease; }
-        .status-bar { font-size: 0.6rem; color: #444; margin-top: 20px; display: flex; justify-content: space-between; border-top: 1px solid #111; padding-top: 10px; }
-        .live-dot { height: 8px; width: 8px; background: #39FF14; border-radius: 50%; display: inline-block; margin-right: 5px; animation: pulse 1.5s infinite; }
-        .offline .live-dot { background: #ff4444; }
-        @keyframes pulse { 0% { opacity: 1; } 50% { opacity: 0.3; } 100% { opacity: 1; } }
-        .error-msg { color: #ff4444; font-size: 0.5rem; display: block; margin-top: 5px; }
+        :root { --neon-green: #39FF14; --neon-red: #ff3131; --bg-dark: #000c18; }
+        body { background: var(--bg-dark); color: #fff; font-family: 'Inter', -apple-system, sans-serif; display: flex; justify-content: center; align-items: center; height: 100vh; margin: 0; }
+        
+        .container { background: #050505; padding: 30px; border-radius: 24px; border: 1px solid #1a1a1a; text-align: center; width: 340px; box-shadow: 0 20px 60px rgba(0,0,0,0.8); }
+        
+        h1 { font-size: 0.7rem; color: #666; margin: 0 0 25px; letter-spacing: 4px; text-transform: uppercase; }
+        
+        .card { margin-bottom: 20px; padding: 15px; background: #0a0a0a; border-radius: 12px; border: 1px solid #111; }
+        .label { font-size: 0.75rem; color: #5bc0de; font-weight: 600; }
+        
+        .price { font-family: 'Courier New', monospace; font-size: 3.5rem; font-weight: bold; margin: 5px 0; transition: color 0.2s ease; }
+        .price.up { color: var(--neon-green); }
+        .price.down { color: var(--neon-red); }
+
+        .status-bar { font-size: 0.6rem; color: #444; margin-top: 20px; display: flex; justify-content: space-between; align-items: center; }
+        .live-dot { height: 6px; width: 6px; background: #444; border-radius: 50%; display: inline-block; margin-right: 6px; transition: background 0.3s; }
+        .connected .live-dot { background: var(--neon-green); box-shadow: 0 0 8px var(--neon-green); animation: pulse 1s infinite; }
+        
+        @keyframes pulse { 0% { opacity: 1; } 50% { opacity: 0.4; } 100% { opacity: 1; } }
     </style>
 </head>
 <body>
 
-    <div class="container">
-        <h1>FUTUROS PETRÓLEO JUN-26</h1>
+    <div class="container" id="mainContainer">
+        <h1>DATA STREAM JUN-26</h1>
         
-        <span class="label">BRENT CRUDE (USD)</span>
-        <div id="brent" class="price">108.90</div>
+        <div class="card">
+            <span class="label">BRENT CRUDE</span>
+            <div id="BINANCE:BRENT" class="price">0.00</div>
+        </div>
 
-        <span class="label">WTI CRUDE (USD)</span>
-        <div id="wti" class="price">104.40</div>
+        <div class="card">
+            <span class="label">WTI CRUDE (LIGHT)</span>
+            <div id="ICEM:WTI" class="price">0.00</div>
+        </div>
 
-        <div id="statusBar" class="status-bar">
-            <span><span class="live-dot"></span> <span id="statusText">CONECTANDO...</span></span>
+        <div class="status-bar">
+            <span><span class="live-dot"></span> <span id="status">DISCONNECTED</span></span>
             <span id="timestamp">--:--:--</span>
         </div>
     </div>
 
     <script>
-        // Precios base (fallback) por si la API falla
-        let prices = { brent: 108.90, wti: 104.40 };
-        
-        async function fetchPrice(symbol) {
-            // Usamos un proxy más directo. Nota: Yahoo Finance es restrictivo con CORS.
-            const url = `https://query1.finance.yahoo.com/v8/finance/chart/${symbol}?interval=1m&range=1d`;
-            const proxyUrl = `https://api.allorigins.win/get?url=${encodeURIComponent(url)}`;
+        const apiKey = 'd775n0hr01qtg3nfne1gd775n0hr01qtg3nfne20';
+        const socket = new WebSocket(`wss://ws.finnhub.io?token=${apiKey}`);
+        let lastPrices = {};
 
-            try {
-                const response = await fetch(proxyUrl);
-                if (!response.ok) throw new Error('Network error');
-                const json = await response.json();
-                const data = JSON.parse(json.contents);
-                return data.chart.result[0].meta.regularMarketPrice;
-            } catch (e) {
-                return null;
+        // Símbolos de Finnhub para petróleo
+        const symbols = ['BINANCE:BRENT', 'ICEM:WTI'];
+
+        socket.addEventListener('open', function (event) {
+            document.getElementById('mainContainer').classList.add('connected');
+            document.getElementById('status').innerText = 'LIVE STREAM';
+            
+            // Suscribirse a los símbolos
+            symbols.forEach(s => {
+                socket.send(JSON.stringify({'type':'subscribe', 'symbol': s}));
+            });
+        });
+
+        socket.addEventListener('message', function (event) {
+            const data = JSON.parse(event.data);
+            
+            if (data.type === 'trade') {
+                data.data.forEach(trade => {
+                    updateDisplay(trade.s, trade.p);
+                });
             }
-        }
+        });
 
-        async function updateMarket() {
-            const brentPrice = await fetchPrice('BZ=F');
-            const wtiPrice = await fetchPrice('CL=F');
+        function updateDisplay(symbol, price) {
+            const el = document.getElementById(symbol);
+            if (!el) return;
 
-            const statusText = document.getElementById('statusText');
-            const statusBar = document.getElementById('statusBar');
-
-            if (brentPrice) {
-                prices.brent = brentPrice;
-                prices.wti = wtiPrice || (brentPrice - 4.5);
-                statusText.innerText = "LIVE FEED";
-                statusBar.classList.remove('offline');
-            } else {
-                // Si falla, simulamos una pequeña variación de centavos para que no parezca "muerto"
-                prices.brent += (Math.random() - 0.5) * 0.05;
-                prices.wti += (Math.random() - 0.5) * 0.05;
-                statusText.innerText = "STANDBY (OFFLINE)";
-                statusBar.classList.add('offline');
+            const oldPrice = lastPrices[symbol] || 0;
+            
+            // Efecto visual de cambio
+            if (price > oldPrice) {
+                el.className = 'price up';
+            } else if (price < oldPrice) {
+                el.className = 'price down';
             }
 
-            document.getElementById('brent').innerText = prices.brent.toFixed(2);
-            document.getElementById('wti').innerText = prices.wti.toFixed(2);
+            el.innerText = price.toFixed(2);
+            lastPrices[symbol] = price;
             document.getElementById('timestamp').innerText = new Date().toLocaleTimeString();
         }
 
-        // Ejecutar inmediatamente
-        updateMarket();
-        
-        // Intervalo de actualización (cada 10 segundos)
-        setInterval(updateMarket, 10000);
+        socket.addEventListener('error', (err) => {
+            document.getElementById('status').innerText = 'ERROR EN API';
+            console.error(err);
+        });
+
+        socket.addEventListener('close', () => {
+            document.getElementById('status').innerText = 'CLOSED';
+            document.getElementById('mainContainer').classList.remove('connected');
+        });
     </script>
 </body>
 </html>

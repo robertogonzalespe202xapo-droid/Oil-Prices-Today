@@ -11,7 +11,7 @@
             --neon-red: #ff2d55;
             --neon-blue: #00f0ff;
             --bg: #0a0e17;
-            --card: #12171f;
+            --card-bg: #12171f;
         }
 
         * { box-sizing: border-box; margin: 0; padding: 0; }
@@ -25,7 +25,6 @@
             justify-content: center;
             align-items: center;
             padding: 15px;
-            overflow: hidden;
         }
 
         .container {
@@ -45,7 +44,7 @@
         }
 
         .header h1 {
-            font-size: clamp(1rem, 4vw, 1.25rem);
+            font-size: clamp(1rem, 4.5vw, 1.3rem);
             color: var(--neon-blue);
             letter-spacing: 6px;
             text-transform: uppercase;
@@ -53,9 +52,9 @@
         }
 
         .card {
-            background: var(--card);
+            background: var(--card-bg);
             border-radius: 24px;
-            padding: 24px 20px;
+            padding: 26px 20px;
             margin-bottom: 24px;
             border: 1px solid #1f2a3f;
             box-shadow: 0 10px 35px rgba(0,0,0,0.7);
@@ -67,45 +66,44 @@
             font-weight: 900;
             letter-spacing: 3px;
             text-transform: uppercase;
-            margin-bottom: 12px;
+            margin-bottom: 14px;
         }
 
-        /* Precio digital grande y estable */
-        .price {
-            font-family: 'DS-Digital', monospace;
-            font-size: clamp(3.8rem, 12vw, 5.8rem);
-            font-weight: bold;
-            line-height: 1;
-            letter-spacing: -4px;
-            margin-bottom: 8px;
-            display: block;
-        }
-
-        .up { color: var(--neon-green); text-shadow: 0 0 25px var(--neon-green), 0 0 50px rgba(0,255,157,0.8); }
-        .down { color: var(--neon-red); text-shadow: 0 0 25px var(--neon-red), 0 0 50px rgba(255,45,85,0.8); }
-
-        .percent {
-            font-family: 'Courier New', monospace;
-            font-size: 1.6rem;
-            font-weight: 700;
-        }
-
-        .row {
+        .price-row {
             display: flex;
             align-items: center;
             justify-content: center;
-            gap: 15px;
+            gap: 18px;
             flex-wrap: nowrap;
         }
 
+        .price {
+            font-family: 'DS-Digital', monospace;
+            font-size: clamp(3.6rem, 11vw, 5.6rem);
+            font-weight: bold;
+            line-height: 1;
+            letter-spacing: -4px;
+            transition: all 0.4s ease;
+        }
+
+        .up { color: var(--neon-green); text-shadow: 0 0 25px var(--neon-green), 0 0 55px rgba(0,255,157,0.85); }
+        .down { color: var(--neon-red); text-shadow: 0 0 25px var(--neon-red), 0 0 55px rgba(255,45,85,0.85); }
+
+        .percent {
+            font-family: 'Courier New', monospace;
+            font-size: 1.65rem;
+            font-weight: 700;
+            min-width: 100px;
+        }
+
         .status-bar {
-            margin-top: 30px;
+            margin-top: 32px;
             padding-top: 20px;
             border-top: 1px solid #1f2a3f;
             display: flex;
             justify-content: space-between;
             align-items: center;
-            font-size: 0.73rem;
+            font-size: 0.74rem;
             color: #777;
         }
 
@@ -126,12 +124,12 @@
 
         @keyframes pulse {
             0%, 100% { opacity: 1; }
-            50% { opacity: 0.4; }
+            50% { opacity: 0.35; }
         }
 
         .footer {
             text-align: center;
-            margin-top: 25px;
+            margin-top: 28px;
             font-size: 0.68rem;
             color: #555;
         }
@@ -144,33 +142,36 @@
         </div>
         
         <div class="card">
-            <span class="label">BRENT CRUDE (ICE) • JUN'26</span>
-            <div class="row">
+            <span class="label">BRENT CRUDE • JUN'26</span>
+            <div class="price-row">
                 <span id="brent_price" class="price">000.00</span>
                 <span id="brent_percent" class="percent">+0.00%</span>
             </div>
         </div>
 
         <div class="card">
-            <span class="label">WTI CRUDE (NYMEX) • JUN'26</span>
-            <div class="row">
+            <span class="label">WTI CRUDE • JUN'26</span>
+            <div class="price-row">
                 <span id="wti_price" class="price">000.00</span>
                 <span id="wti_percent" class="percent">+0.00%</span>
             </div>
         </div>
 
         <div class="status-bar">
-            <span><span class="live-dot"></span><span id="status">CONECTANDO AL MERCADO...</span></span>
+            <span><span class="live-dot"></span><span id="status">CONECTANDO A OILPRICEAPI...</span></span>
             <span id="timestamp">--:--:--</span>
         </div>
 
         <div class="footer">
-            Datos simulados en tiempo real • Brent & WTI Junio 2026
+            Datos reales vía OilPriceAPI.com
         </div>
     </div>
 
     <script>
-        const elements = {
+        const API_KEY = "7e5869c8f17e379b2fb01044d84f08735d5dd32bd8cacd175357d4510e6cc000";
+        const BASE_URL = "https://api.oilpriceapi.com/v1";
+
+        const els = {
             brentPrice: document.getElementById('brent_price'),
             brentPercent: document.getElementById('brent_percent'),
             wtiPrice: document.getElementById('wti_price'),
@@ -180,44 +181,74 @@
             container: document.getElementById('mainContainer')
         };
 
-        let brentPrev = 107.35;
-        let wtiPrev = 99.15;
+        let brentPrev = 0;
+        let wtiPrev = 0;
 
-        function updateUI(priceEl, percentEl, price, prevClose) {
-            const diff = ((price - prevClose) / prevClose) * 100;
+        async function fetchOilPrices() {
+            try {
+                els.status.textContent = "ACTUALIZANDO PRECIOS...";
+
+                // Obtener precios de Brent y WTI en una sola llamada (más eficiente)
+                const response = await fetch(`${BASE_URL}/prices/latest?by_code=BRENT_CRUDE_USD,WTI_USD`, {
+                    headers: {
+                        'Authorization': `Token ${API_KEY}`,
+                        'Content-Type': 'application/json'
+                    }
+                });
+
+                if (!response.ok) throw new Error(`HTTP ${response.status}`);
+
+                const data = await response.json();
+
+                // Procesar Brent
+                const brentData = data.data.find(item => item.code === "BRENT_CRUDE_USD" || item.code.includes("BRENT"));
+                if (brentData) {
+                    const price = parseFloat(brentData.price);
+                    if (brentPrev === 0) brentPrev = price;
+                    updateDisplay(els.brentPrice, els.brentPercent, price, brentPrev, "brent");
+                    brentPrev = price;
+                }
+
+                // Procesar WTI
+                const wtiData = data.data.find(item => item.code === "WTI_USD" || item.code.includes("WTI"));
+                if (wtiData) {
+                    const price = parseFloat(wtiData.price);
+                    if (wtiPrev === 0) wtiPrev = price;
+                    updateDisplay(els.wtiPrice, els.wtiPercent, price, wtiPrev, "wti");
+                    wtiPrev = price;
+                }
+
+                els.container.classList.add('connected');
+                els.status.textContent = "LIVE • OILPRICEAPI CONECTADO";
+                els.timestamp.textContent = new Date().toLocaleTimeString('es-MX', { hour12: false });
+
+            } catch (error) {
+                console.error(error);
+                els.status.textContent = "ERROR AL OBTENER DATOS - Reintentando...";
+            }
+        }
+
+        function updateDisplay(priceEl, percentEl, newPrice, prevPrice) {
+            const diff = prevPrice > 0 ? ((newPrice - prevPrice) / prevPrice) * 100 : 0;
             const isUp = diff >= 0;
 
-            priceEl.textContent = parseFloat(price).toFixed(2);
+            priceEl.textContent = newPrice.toFixed(2);
             percentEl.textContent = `${isUp ? '+' : ''}${diff.toFixed(2)}%`;
-
-            priceEl.className = `price ${isUp ? 'up' : 'down'}`;
             percentEl.style.color = isUp ? 'var(--neon-green)' : 'var(--neon-red)';
 
-            elements.timestamp.textContent = new Date().toLocaleTimeString('es-MX', { hour12: false });
+            priceEl.className = `price ${isUp ? 'up' : 'down'}`;
         }
 
-        function fetchOilPrices() {
-            const brent = (Math.random() * 5 + 104).toFixed(2);
-            const wti   = (Math.random() * 6 + 96).toFixed(2);
-
-            updateUI(elements.brentPrice, elements.brentPercent, brent, brentPrev);
-            updateUI(elements.wtiPrice, elements.wtiPercent, wti, wtiPrev);
-
-            brentPrev = parseFloat(brent);
-            wtiPrev   = parseFloat(wti);
-
-            elements.status.textContent = 'LIVE • MERCADO EN TIEMPO REAL';
-            elements.container.classList.add('connected');
-        }
-
+        // Inicialización
         function init() {
-            elements.brentPrice.textContent = "107.35";
-            elements.wtiPrice.textContent = "99.15";
-            elements.brentPrice.className = "price up";
-            elements.wtiPrice.className = "price up";
+            els.brentPrice.textContent = "000.00";
+            els.wtiPrice.textContent = "000.00";
 
+            // Primera carga
             fetchOilPrices();
-            setInterval(fetchOilPrices, 7000);
+
+            // Actualizar cada 8 segundos (OilPriceAPI actualiza aprox. cada 5 min, pero polling frecuente es seguro en free tier)
+            setInterval(fetchOilPrices, 8000);
         }
 
         window.onload = init;

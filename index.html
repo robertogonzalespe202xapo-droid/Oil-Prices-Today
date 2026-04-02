@@ -34,20 +34,16 @@
             border: 1px solid #1f2a3f;
             width: 100%;
             max-width: 480px;
-            box-shadow: 0 0 100px rgba(0, 240, 255, 0.15),
-                        inset 0 0 50px rgba(0,0,0,0.8);
-        }
-
-        .header {
-            text-align: center;
-            margin-bottom: 40px;
+            box-shadow: 0 0 100px rgba(0, 240, 255, 0.15), inset 0 0 50px rgba(0,0,0,0.8);
         }
 
         .header h1 {
+            text-align: center;
             font-size: clamp(1rem, 4.5vw, 1.3rem);
             color: var(--neon-blue);
             letter-spacing: 6px;
             text-transform: uppercase;
+            margin-bottom: 40px;
             text-shadow: 0 0 20px rgba(0, 240, 255, 0.7);
         }
 
@@ -74,7 +70,6 @@
             align-items: center;
             justify-content: center;
             gap: 18px;
-            flex-wrap: nowrap;
         }
 
         .price {
@@ -83,7 +78,6 @@
             font-weight: bold;
             line-height: 1;
             letter-spacing: -4px;
-            transition: all 0.4s ease;
         }
 
         .up { color: var(--neon-green); text-shadow: 0 0 25px var(--neon-green), 0 0 55px rgba(0,255,157,0.85); }
@@ -102,15 +96,13 @@
             border-top: 1px solid #1f2a3f;
             display: flex;
             justify-content: space-between;
-            align-items: center;
             font-size: 0.74rem;
             color: #777;
         }
 
         .live-dot {
             display: inline-block;
-            width: 10px;
-            height: 10px;
+            width: 10px; height: 10px;
             background: #333;
             border-radius: 50%;
             margin-right: 8px;
@@ -122,17 +114,10 @@
             animation: pulse 1.4s infinite;
         }
 
-        @keyframes pulse {
-            0%, 100% { opacity: 1; }
-            50% { opacity: 0.35; }
-        }
+        @keyframes pulse { 0%, 100% { opacity: 1; } 50% { opacity: 0.35; } }
 
-        .footer {
-            text-align: center;
-            margin-top: 28px;
-            font-size: 0.68rem;
-            color: #555;
-        }
+        .footer { text-align: center; margin-top: 28px; font-size: 0.68rem; color: #555; }
+        .error { color: #ff6666; }
     </style>
 </head>
 <body>
@@ -158,18 +143,15 @@
         </div>
 
         <div class="status-bar">
-            <span><span class="live-dot"></span><span id="status">CONECTANDO A OILPRICEAPI...</span></span>
+            <span><span class="live-dot"></span><span id="status">CONECTANDO...</span></span>
             <span id="timestamp">--:--:--</span>
         </div>
 
-        <div class="footer">
-            Datos reales vía OilPriceAPI.com
-        </div>
+        <div class="footer">Datos reales vía OilPriceAPI.com</div>
     </div>
 
     <script>
         const API_KEY = "7e5869c8f17e379b2fb01044d84f08735d5dd32bd8cacd175357d4510e6cc000";
-        const BASE_URL = "https://api.oilpriceapi.com/v1";
 
         const els = {
             brentPrice: document.getElementById('brent_price'),
@@ -181,50 +163,49 @@
             container: document.getElementById('mainContainer')
         };
 
-        let brentPrev = 0;
-        let wtiPrev = 0;
+        let brentPrev = 0, wtiPrev = 0;
+
+        async function getPrice(code) {
+            const res = await fetch(`https://api.oilpriceapi.com/v1/prices/latest?by_code=${code}`, {
+                headers: { 
+                    'Authorization': `Token ${API_KEY}`,
+                    'Content-Type': 'application/json'
+                }
+            });
+
+            if (!res.ok) throw new Error(`HTTP ${res.status}`);
+            const json = await res.json();
+            return parseFloat(json.data.price || json.data.formatted.replace(/[^0-9.]/g, ''));
+        }
 
         async function fetchOilPrices() {
             try {
-                els.status.textContent = "ACTUALIZANDO PRECIOS...";
+                els.status.textContent = "ACTUALIZANDO...";
+                els.status.classList.remove('error');
 
-                // Obtener precios de Brent y WTI en una sola llamada (más eficiente)
-                const response = await fetch(`${BASE_URL}/prices/latest?by_code=BRENT_CRUDE_USD,WTI_USD`, {
-                    headers: {
-                        'Authorization': `Token ${API_KEY}`,
-                        'Content-Type': 'application/json'
-                    }
-                });
+                const [brentPrice, wtiPrice] = await Promise.all([
+                    getPrice("BRENT_CRUDE_USD"),
+                    getPrice("WTI_USD")
+                ]);
 
-                if (!response.ok) throw new Error(`HTTP ${response.status}`);
+                // Actualizar Brent
+                if (brentPrev === 0) brentPrev = brentPrice;
+                updateDisplay(els.brentPrice, els.brentPercent, brentPrice, brentPrev);
+                brentPrev = brentPrice;
 
-                const data = await response.json();
-
-                // Procesar Brent
-                const brentData = data.data.find(item => item.code === "BRENT_CRUDE_USD" || item.code.includes("BRENT"));
-                if (brentData) {
-                    const price = parseFloat(brentData.price);
-                    if (brentPrev === 0) brentPrev = price;
-                    updateDisplay(els.brentPrice, els.brentPercent, price, brentPrev, "brent");
-                    brentPrev = price;
-                }
-
-                // Procesar WTI
-                const wtiData = data.data.find(item => item.code === "WTI_USD" || item.code.includes("WTI"));
-                if (wtiData) {
-                    const price = parseFloat(wtiData.price);
-                    if (wtiPrev === 0) wtiPrev = price;
-                    updateDisplay(els.wtiPrice, els.wtiPercent, price, wtiPrev, "wti");
-                    wtiPrev = price;
-                }
+                // Actualizar WTI
+                if (wtiPrev === 0) wtiPrev = wtiPrice;
+                updateDisplay(els.wtiPrice, els.wtiPercent, wtiPrice, wtiPrev);
+                wtiPrev = wtiPrice;
 
                 els.container.classList.add('connected');
-                els.status.textContent = "LIVE • OILPRICEAPI CONECTADO";
+                els.status.textContent = "LIVE • CONECTADO";
                 els.timestamp.textContent = new Date().toLocaleTimeString('es-MX', { hour12: false });
 
-            } catch (error) {
-                console.error(error);
+            } catch (err) {
+                console.error(err);
                 els.status.textContent = "ERROR AL OBTENER DATOS - Reintentando...";
+                els.status.classList.add('error');
             }
         }
 
@@ -235,20 +216,12 @@
             priceEl.textContent = newPrice.toFixed(2);
             percentEl.textContent = `${isUp ? '+' : ''}${diff.toFixed(2)}%`;
             percentEl.style.color = isUp ? 'var(--neon-green)' : 'var(--neon-red)';
-
             priceEl.className = `price ${isUp ? 'up' : 'down'}`;
         }
 
-        // Inicialización
         function init() {
-            els.brentPrice.textContent = "000.00";
-            els.wtiPrice.textContent = "000.00";
-
-            // Primera carga
             fetchOilPrices();
-
-            // Actualizar cada 8 segundos (OilPriceAPI actualiza aprox. cada 5 min, pero polling frecuente es seguro en free tier)
-            setInterval(fetchOilPrices, 8000);
+            setInterval(fetchOilPrices, 10000);   // cada 10 segundos
         }
 
         window.onload = init;

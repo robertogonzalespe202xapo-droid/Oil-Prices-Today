@@ -3,11 +3,11 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Oil Tracker Ultra | Fix v3</title>
+    <title>Oil Tracker Ultra | Brent Fix</title>
     <style>
         :root { --neon-green: #39FF14; --neon-red: #ff3131; --bg-dark: #000c18; }
         body { background: var(--bg-dark); color: #fff; font-family: 'Inter', sans-serif; display: flex; justify-content: center; align-items: center; height: 100vh; margin: 0; }
-        .container { background: #050505; padding: 30px; border-radius: 24px; border: 1px solid #1a1a1a; text-align: center; width: 340px; box-shadow: 0 20px 60px rgba(0,0,0,0.8); transition: opacity 0.5s; }
+        .container { background: #050505; padding: 30px; border-radius: 24px; border: 1px solid #1a1a1a; text-align: center; width: 340px; box-shadow: 0 20px 60px rgba(0,0,0,0.8); }
         h1 { font-size: 0.7rem; color: #666; margin: 0 0 25px; letter-spacing: 4px; text-transform: uppercase; }
         .card { margin-bottom: 20px; padding: 15px; background: #0a0a0a; border-radius: 12px; border: 1px solid #111; }
         .label { font-size: 0.75rem; color: #5bc0de; font-weight: 600; text-transform: uppercase; }
@@ -43,33 +43,37 @@
 
     <script>
         const apiKey = 'd775n0hr01qtg3nfne1gd775n0hr01qtg3nfne20';
-        // Usamos OANDA como proveedor de CFD, que es mucho más activo en el feed gratuito de Finnhub
+        
+        // Símbolos alternativos de alta disponibilidad
         const symbols = {
-            'OANDA:BRENT_CASH': 'UKOIL',
+            'OANDA:BCO_USD': 'UKOIL',
             'OANDA:WTICO_USD': 'USOIL'
         };
 
         const socket = new WebSocket(`wss://ws.finnhub.io?token=${apiKey}`);
         let lastPrices = {};
 
-        // 1. Cargar precios iniciales vía REST (para evitar los ceros al inicio)
         async function loadInitialPrices() {
             for (const [key, id] of Object.entries(symbols)) {
                 try {
                     const response = await fetch(`https://finnhub.io/api/v1/quote?symbol=${key}&token=${apiKey}`);
                     const data = await response.json();
-                    if (data.c) updateUI(id, data.c);
-                } catch (e) { console.error("Error cargando precio inicial:", e); }
+                    if (data.c && data.c !== 0) {
+                        updateUI(id, data.c);
+                    }
+                } catch (e) { console.error("Error en carga inicial:", e); }
             }
         }
 
-        // 2. Escuchar el stream de WebSockets para cambios en tiempo real
         socket.addEventListener('open', () => {
             document.getElementById('mainContainer').classList.add('connected');
             document.getElementById('status').innerText = 'LIVE STREAM';
+            
             Object.keys(symbols).forEach(s => {
                 socket.send(JSON.stringify({'type':'subscribe', 'symbol': s}));
             });
+            
+            // Forzar carga inicial inmediata
             loadInitialPrices();
         });
 
@@ -85,19 +89,24 @@
 
         function updateUI(id, price) {
             const el = document.getElementById(id);
+            if (!el) return;
+
             const oldPrice = lastPrices[id] || price;
             
-            if (price > oldPrice) el.className = 'price up';
-            else if (price < oldPrice) el.className = 'price down';
+            if (price > oldPrice) {
+                el.className = 'price up';
+            } else if (price < oldPrice) {
+                el.className = 'price down';
+            }
 
             el.innerText = price.toFixed(2);
             lastPrices[id] = price;
             document.getElementById('timestamp').innerText = new Date().toLocaleTimeString();
         }
 
+        // Reconexión automática si se pierde el socket
         socket.onclose = () => {
-            document.getElementById('status').innerText = 'OFFLINE';
-            document.getElementById('mainContainer').classList.remove('connected');
+            setTimeout(() => location.reload(), 5000);
         };
     </script>
 </body>

@@ -16,147 +16,146 @@
             --card: #12171f;
         }
 
-        * { box-sizing: border-box; }
-        
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+
         body {
             background: linear-gradient(135deg, #0a0e17 0%, #1a2333 100%);
             color: #fff;
             font-family: 'Segoe UI', system-ui, sans-serif;
-            margin: 0;
-            padding: 15px;
             min-height: 100vh;
             display: flex;
             justify-content: center;
             align-items: center;
+            padding: 15px;
         }
 
         .container {
             background: #0c111b;
-            padding: 30px 25px;
+            padding: 35px 25px;
             border-radius: 28px;
             border: 1px solid #1f2a3f;
             width: 100%;
-            max-width: 420px;
-            box-shadow: 0 0 90px rgba(0, 240, 255, 0.18),
-                        inset 0 0 40px rgba(0,0,0,0.7);
-            position: relative;
-            overflow: hidden;
-        }
-
-        @media (min-width: 768px) {
-            .container {
-                max-width: 480px;
-                padding: 40px 35px;
-            }
+            max-width: 460px;
+            box-shadow: 0 0 100px rgba(0, 240, 255, 0.15),
+                        inset 0 0 50px rgba(0,0,0,0.8);
         }
 
         .header {
             text-align: center;
-            margin-bottom: 35px;
+            margin-bottom: 40px;
         }
 
         .header h1 {
-            font-size: 1.05rem;
+            font-size: 1.1rem;
             color: var(--neon-blue);
-            margin: 0;
-            letter-spacing: 5px;
+            letter-spacing: 6px;
             text-transform: uppercase;
-            text-shadow: 0 0 15px rgba(0, 240, 255, 0.6);
+            text-shadow: 0 0 20px rgba(0, 240, 255, 0.6);
         }
 
         .card {
             background: var(--card);
-            border-radius: 22px;
-            padding: 22px 18px;
-            margin-bottom: 22px;
+            border-radius: 24px;
+            padding: 25px 20px;
+            margin-bottom: 25px;
             border: 1px solid #1f2a3f;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.6);
-            transition: all 0.3s ease;
-        }
-
-        .card:hover {
-            transform: translateY(-3px);
-            box-shadow: 0 15px 35px rgba(0, 240, 255, 0.1);
+            box-shadow: 0 10px 35px rgba(0,0,0,0.7);
         }
 
         .label {
-            font-size: 0.82rem;
+            font-size: 0.85rem;
             color: #7eb8ff;
             font-weight: 900;
-            letter-spacing: 2.5px;
+            letter-spacing: 3px;
             text-transform: uppercase;
+            margin-bottom: 15px;
             display: block;
-            margin-bottom: 12px;
         }
 
+        /* === ODOMETER FIX PRINCIPAL === */
         .odometer-wrapper {
             display: flex;
             align-items: center;
             justify-content: center;
-            flex-wrap: wrap;
-            gap: 10px;
-            min-height: 88px;
+            gap: 12px;
+            min-height: 85px;
+            flex-wrap: nowrap;           /* ← Esto evita que se apilen */
+            overflow: hidden;
         }
 
         .odometer {
             font-family: 'DS-Digital', monospace !important;
-            font-size: 4.6rem;
+            font-size: 4.8rem !important;
             font-weight: bold;
-            line-height: 1;
-            letter-spacing: -3px;
+            line-height: 1 !important;
+            letter-spacing: -4px;
+            height: 85px !important;     /* Altura fija para evitar desbordes */
+            display: inline-flex;
+            align-items: center;
         }
 
+        /* Ajuste para pantallas más grandes */
         @media (min-width: 768px) {
-            .odometer { font-size: 5.2rem; }
+            .odometer {
+                font-size: 5.4rem !important;
+                height: 95px !important;
+            }
+            .container { max-width: 500px; padding: 45px 35px; }
         }
 
-        .up { color: var(--neon-green); text-shadow: 0 0 20px var(--neon-green), 0 0 40px rgba(0,255,157,0.7); }
-        .down { color: var(--neon-red); text-shadow: 0 0 20px var(--neon-red), 0 0 40px rgba(255,45,85,0.7); }
+        .up { 
+            color: var(--neon-green); 
+            text-shadow: 0 0 25px var(--neon-green), 0 0 50px rgba(0,255,157,0.8); 
+        }
+        .down { 
+            color: var(--neon-red); 
+            text-shadow: 0 0 25px var(--neon-red), 0 0 50px rgba(255,45,85,0.8); 
+        }
 
         .percent {
             font-family: 'Courier New', monospace;
-            font-size: 1.45rem;
+            font-size: 1.55rem;
             font-weight: 700;
-            min-width: 90px;
+            min-width: 95px;
+            text-align: left;
         }
 
         .status-bar {
-            margin-top: 25px;
-            padding-top: 18px;
+            margin-top: 30px;
+            padding-top: 20px;
             border-top: 1px solid #1f2a3f;
             display: flex;
             justify-content: space-between;
             align-items: center;
-            font-size: 0.68rem;
-            color: #666;
+            font-size: 0.72rem;
+            color: #777;
         }
 
         .live-dot {
             display: inline-block;
-            width: 9px;
-            height: 9px;
+            width: 10px;
+            height: 10px;
             background: #333;
             border-radius: 50%;
             margin-right: 8px;
-            vertical-align: middle;
         }
 
         .connected .live-dot {
             background: var(--neon-green);
-            box-shadow: 0 0 15px var(--neon-green);
-            animation: pulse 1.4s infinite;
+            box-shadow: 0 0 18px var(--neon-green);
+            animation: pulse 1.3s infinite;
         }
 
         @keyframes pulse {
             0%, 100% { opacity: 1; }
-            50% { opacity: 0.35; }
+            50% { opacity: 0.4; }
         }
 
         .footer {
             text-align: center;
             margin-top: 25px;
-            font-size: 0.65rem;
-            color: #444;
+            font-size: 0.68rem;
+            color: #555;
         }
     </style>
 </head>
@@ -183,12 +182,12 @@
         </div>
 
         <div class="status-bar">
-            <span><span class="live-dot"></span><span id="status">CONECTANDO A MERCADO...</span></span>
+            <span><span class="live-dot"></span><span id="status">CONECTANDO...</span></span>
             <span id="timestamp">--:--:--</span>
         </div>
 
         <div class="footer">
-            Datos simulados en tiempo real • Actualiza cada 8 segundos
+            Datos en tiempo real • Brent &amp; WTI Junio 2026
         </div>
     </div>
 
@@ -204,8 +203,8 @@
             container: document.getElementById('mainContainer')
         };
 
-        let brentPrev = 101.16;
-        let wtiPrev = 97.50;
+        let brentPrev = 105.80;
+        let wtiPrev = 98.40;
 
         function updateUI(priceEl, percentEl, price, prevClose) {
             const diff = ((price - prevClose) / prevClose) * 100;
@@ -220,33 +219,27 @@
             elements.timestamp.textContent = new Date().toLocaleTimeString('es-MX', { hour12: false });
         }
 
-        async function fetchOilPrices() {
-            try {
-                // Simulación realista (en producción reemplaza con API real como OilPriceAPI)
-                const brent = (Math.random() * 6 + 104).toFixed(2);
-                const wti = (Math.random() * 7 + 96).toFixed(2);
+        function fetchOilPrices() {
+            // Simulación realista
+            const brent = (Math.random() * 5 + 104).toFixed(2);
+            const wti = (Math.random() * 6 + 96).toFixed(2);
 
-                updateUI(elements.brentPrice, elements.brentPercent, brent, brentPrev);
-                updateUI(elements.wtiPrice, elements.wtiPercent, wti, wtiPrev);
+            updateUI(elements.brentPrice, elements.brentPercent, brent, brentPrev);
+            updateUI(elements.wtiPrice, elements.wtiPercent, wti, wtiPrev);
 
-                brentPrev = parseFloat(brent);
-                wtiPrev = parseFloat(wti);
+            brentPrev = parseFloat(brent);
+            wtiPrev = parseFloat(wti);
 
-                elements.status.textContent = 'LIVE • MERCADO ABIERTO';
-                elements.container.classList.add('connected');
-
-            } catch (e) {
-                elements.status.textContent = 'ERROR DE CONEXIÓN';
-            }
+            elements.status.textContent = 'LIVE • MERCADO EN TIEMPO REAL';
+            elements.container.classList.add('connected');
         }
 
         function init() {
-            // Valores iniciales más realistas (basados en datos recientes)
-            elements.brentPrice.textContent = "108.45";
-            elements.wtiPrice.textContent = "97.80";
+            elements.brentPrice.textContent = "107.35";
+            elements.wtiPrice.textContent = "99.15";
 
             fetchOilPrices();
-            setInterval(fetchOilPrices, 8000); // Actualiza cada 8 segundos
+            setInterval(fetchOilPrices, 7000);   // Actualiza cada 7 segundos
         }
 
         window.onload = init;

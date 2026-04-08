@@ -28,7 +28,7 @@
             position: relative;
         }
 
-        /* EFECTO AGUA BRILLANTE DINÁMICO */
+        /* EFECTO AGUA BRILLANTE */
         body::before {
             content: "";
             position: absolute;
@@ -133,8 +133,8 @@
             font-family: 'Courier New', monospace;
         }
 
-        .positive { color: var(--neon-green); text-shadow: 0 0 10px rgba(0,255,157,0.3); }
-        .negative { color: var(--neon-red); text-shadow: 0 0 10px rgba(255,45,85,0.3); }
+        .positive { color: var(--neon-green); }
+        .negative { color: var(--neon-red); }
 
         .status-bar {
             display: flex;
@@ -162,7 +162,6 @@
             box-shadow: 0 0 20px var(--neon-blue);
         }
 
-        /* MODAL LOGS */
         .modal {
             display: none;
             position: fixed;
@@ -236,9 +235,8 @@
     </div>
 
     <script>
-        // CONFIGURACIÓN DE API
         const API_KEY = "d0fe91b38b11caf283f0fe96e05992e7f3807eae0455325cd76e1f988477b685";
-        const BASE_URL = "https://www.oilpriceapi.com/api/v1/prices/latest";
+        const BASE_URL = "https://api.oilpriceapi.com/v1/prices/latest"; // URL Corregida
 
         let cache = { brent: null, wti: null };
 
@@ -250,29 +248,34 @@
         }
 
         async function fetchPrices() {
-            log("Conectando con OilPriceAPI...");
+            log("Intentando conectar con OilPriceAPI...");
+            
+            const options = {
+                method: 'GET',
+                headers: {
+                    'Authorization': `Token ${API_KEY}`,
+                    'Content-Type': 'application/json'
+                }
+            };
+
             try {
-                // Brent Request
-                const resB = await fetch(`${BASE_URL}?by_code=BRENT_CRUDE`, {
-                    headers: { 'Authorization': `Token ${API_KEY}` }
-                });
+                // Brent
+                const resB = await fetch(`${BASE_URL}?by_code=BRENT_CRUDE`, options);
+                if (!resB.ok) throw new Error(`HTTP ${resB.status}`);
                 const dataB = await resB.json();
 
-                // WTI Request
-                const resW = await fetch(`${BASE_URL}?by_code=WTI_CRUDE`, {
-                    headers: { 'Authorization': `Token ${API_KEY}` }
-                });
+                // WTI
+                const resW = await fetch(`${BASE_URL}?by_code=WTI_CRUDE`, options);
+                if (!resW.ok) throw new Error(`HTTP ${resW.status}`);
                 const dataW = await resW.json();
 
-                if (dataB.data && dataW.data) {
-                    processUpdate('brent', dataB.data.price);
-                    processUpdate('wti', dataW.data.price);
-                    log("Datos recibidos correctamente.");
-                } else {
-                    log("Error: Respuesta de API incompleta.");
-                }
+                processUpdate('brent', dataB.data.price);
+                processUpdate('wti', dataW.data.price);
+                log("Actualización exitosa.");
+                
             } catch (e) {
-                log("Excepción: " + e.message);
+                log("Error Crítico: " + e.message);
+                log("Sugerencia: Revisa si tu API Key tiene créditos o si hay bloqueo de CORS.");
             }
             scheduleNextUpdate();
         }
@@ -292,7 +295,6 @@
                 changeEl.innerText = `${isPos ? '▲' : '▼'} ${Math.abs(diff).toFixed(2)} (${pct}%)`;
             } else {
                 changeEl.innerText = "MARKET LIVE";
-                changeEl.style.color = "#456";
             }
             cache[type] = newPrice;
         }
@@ -300,28 +302,20 @@
         function scheduleNextUpdate() {
             const now = new Date();
             let nextUpdate = new Date();
-            
-            // Configurar a las 07:00:00 AM
             nextUpdate.setHours(7, 0, 0, 0);
-
-            // Si ya pasó la hora hoy, programar para mañana
-            if (now >= nextUpdate) {
-                nextUpdate.setDate(nextUpdate.getDate() + 1);
-            }
+            if (now >= nextUpdate) nextUpdate.setDate(nextUpdate.getDate() + 1);
 
             const msUntilUpdate = nextUpdate - now;
             const hours = Math.floor(msUntilUpdate / (1000 * 60 * 60));
             const mins = Math.floor((msUntilUpdate / (1000 * 60)) % 60);
 
-            document.getElementById('update-timer').innerText = `Próximo refresh en: ${hours}h ${mins}m (07:00 AM)`;
-            
-            // Reiniciar el timer
+            document.getElementById('update-timer').innerText = `Sig. carga: 07:00 AM (en ${hours}h ${mins}m)`;
             setTimeout(fetchPrices, msUntilUpdate);
         }
 
         function toggleModal() {
             const m = document.getElementById('modal');
-            m.style.display = m.style.display === 'flex' ? 'none' : 'flex';
+            m.style.display = (m.style.display === 'flex') ? 'none' : 'flex';
         }
 
         window.onload = fetchPrices;

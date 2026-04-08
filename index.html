@@ -2,157 +2,193 @@
 <html lang="es">
 <head>
     <meta charset="UTF-8">
-    <title>OIL IMPERIVM • Live Monitor</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Oil Tracker Pro • 2026</title>
+    
     <style>
         :root {
+            --neon-green: #00ff9d;
+            --neon-red: #ff2d55;
             --neon-blue: #00f0ff;
-            --deep-ocean: #001a33;
-            --gold: #ffd700;
+            --card-bg: #12171f;
         }
 
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+
         body {
-            /* Efecto de agua brillante con degradado animado */
-            background: radial-gradient(circle at center, #004d66 0%, #001a33 70%, #00050a 100%);
-            background-size: 200% 200%;
-            animation: waterGlow 8s ease-in-out infinite;
+            background: radial-gradient(circle at center, #1a2333 0%, #0a0e17 100%);
             color: #fff;
-            font-family: 'Times New Roman', serif;
+            font-family: 'Segoe UI', sans-serif;
+            min-height: 100vh;
             display: flex;
             justify-content: center;
             align-items: center;
-            min-height: 100vh;
-            margin: 0;
-            overflow: hidden;
+            padding: 15px;
         }
-
-        @keyframes waterGlow {
-            0% { background-position: 0% 50%; }
-            50% { background-position: 100% 50%; }
-            100% { background-position: 0% 50%; }
-        }
-
-        /* Añade un brillo extra tipo "reflejo de agua" */
-        body::before {
-            content: "";
-            position: absolute;
-            top: 0; left: 0; width: 100%; height: 100%;
-            background: url('https://www.transparenttextures.com/patterns/carbon-fibre.png'); /* Sutil textura para difuminar el brillo */
-            opacity: 0.1;
-            pointer-events: none;
-        }
-
-        /* Pilares laterales - Cambiado a .png */
-        .pilar {
-            position: fixed;
-            top: 0;
-            height: 100vh;
-            width: 15vw;
-            background-repeat: no-repeat;
-            background-size: contain;
-            z-index: 5;
-            filter: drop-shadow(0 0 15px var(--neon-blue)); /* Brillo en los pilares */
-        }
-        .left { left: 5px; background-image: url("image_dc1a43.png"); }
-        .right { right: 5px; background-image: url("image_dc1a43.png"); transform: scaleX(-1); }
 
         .container {
-            width: 400px;
-            z-index: 10;
-            text-align: center;
-        }
-
-        /* Bordes romanos */
-        .card {
-            background: rgba(0, 20, 40, 0.85); /* Fondo azul marino semitransparente */
-            margin-bottom: 25px;
+            background: #0c111b;
             padding: 30px;
-            border: 20px solid transparent;
-            border-image-source: url("image_dc039d.png");
-            border-image-slice: 27;
-            border-image-repeat: stretch;
-            box-shadow: 0 0 30px rgba(0, 240, 255, 0.4), inset 0 0 20px rgba(0, 240, 255, 0.1);
-            backdrop-filter: blur(5px); /* Efecto de cristal esmerilado */
+            border-radius: 32px;
+            border: 1px solid #1f2a3f;
+            width: 100%;
+            max-width: 420px;
+            box-shadow: 0 20px 50px rgba(0,0,0,0.5);
         }
 
-        .label { color: var(--gold); letter-spacing: 3px; font-size: 1rem; text-shadow: 1px 1px 2px #000; }
-        .price { font-family: monospace; font-size: 3.8rem; text-shadow: 0 0 15px var(--neon-blue); color: #e6ffff; }
+        .header h1 {
+            text-align: center;
+            font-size: 0.8rem;
+            color: var(--neon-blue);
+            letter-spacing: 4px;
+            text-transform: uppercase;
+            margin-bottom: 30px;
+            opacity: 0.9;
+        }
 
-        #console {
-            position: fixed;
-            bottom: 20px;
-            width: 320px;
-            background: rgba(0, 10, 20, 0.9);
-            border: 1px solid var(--neon-blue);
-            padding: 10px;
-            font-family: monospace;
+        .card {
+            background: var(--card-bg);
+            border-radius: 24px;
+            padding: 25px 15px;
+            margin-bottom: 25px;
+            border: 1px solid #1f2a3f;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            transition: all 0.3s ease;
+        }
+
+        .label {
             font-size: 0.75rem;
-            color: #00ffcc;
-            max-height: 100px;
-            overflow-y: auto;
-            box-shadow: 0 0 10px var(--neon-blue);
+            color: #7eb8ff;
+            font-weight: 800;
+            letter-spacing: 2px;
+            margin-bottom: 15px;
         }
+
+        .price-main {
+            font-family: 'DS-Digital', monospace;
+            font-size: 5rem;
+            font-weight: bold;
+            color: #ffffff;
+            line-height: 0.9;
+            margin: 10px 0;
+            text-shadow: 0 0 15px rgba(255,255,255,0.1);
+        }
+
+        .stat-box {
+            font-family: 'Courier New', monospace;
+            font-size: 0.7rem;
+            padding: 5px 15px;
+            border-radius: 4px;
+            font-weight: bold;
+            width: 160px;
+            text-align: center;
+            letter-spacing: 1px;
+        }
+
+        .max-box {
+            border: 1px solid var(--neon-green);
+            color: var(--neon-green);
+            background: rgba(0, 255, 157, 0.05);
+            text-transform: uppercase;
+        }
+
+        .min-box {
+            border: 1px solid var(--neon-red);
+            color: var(--neon-red);
+            background: rgba(255, 45, 85, 0.05);
+            text-transform: uppercase;
+        }
+
+        .status-bar {
+            margin-top: 10px;
+            display: flex;
+            justify-content: space-between;
+            font-size: 0.65rem;
+            color: #456;
+            text-transform: uppercase;
+        }
+
+        .live-dot {
+            display: inline-block;
+            width: 7px; height: 7px;
+            background: var(--neon-green);
+            border-radius: 50%;
+            margin-right: 5px;
+            box-shadow: 0 0 8px var(--neon-green);
+            animation: pulse 1.5s infinite;
+        }
+
+        @keyframes pulse { 0%, 100% { opacity: 1; } 50% { opacity: 0.3; } }
     </style>
 </head>
 <body>
-
-    <div class="pilar left"></div>
-    <div class="pilar right"></div>
-
-    <div class="container">
-        <h1 style="color:var(--gold); letter-spacing: 8px; text-shadow: 2px 2px 4px #000;">OIL IMPERIVM</h1>
+    <div class="container" id="mainContainer">
+        <div class="header"><h1>Precios Petróleo Six Seven no se jeje • 2026</h1></div>
         
         <div class="card">
-            <div class="label">BRENT CRUDE</div>
-            <div id="brent" class="price">--.--</div>
+            <span class="label">BRENT CRUDE</span>
+            <div class="stat-box max-box">MAX MES: <span id="brent_max">0.00</span></div>
+            <div id="brent_price" class="price-main">00.00</div>
+            <div class="stat-box min-box">MIN MES: <span id="brent_min">0.00</span></div>
         </div>
 
         <div class="card">
-            <div class="label">WTI CRUDE</div>
-            <div id="wti" class="price">--.--</div>
+            <span class="label">WTI CRUDE</span>
+            <div class="stat-box max-box">MAX MES: <span id="wti_max">0.00</span></div>
+            <div id="wti_price" class="price-main">00.00</div>
+            <div class="stat-box min-box">MIN MES: <span id="wti_min">0.00</span></div>
+        </div>
+
+        <div class="status-bar">
+            <span><span class="live-dot"></span>LIVE FEED</span>
+            <span id="timestamp">--:--:--</span>
         </div>
     </div>
 
-    <div id="console">Iniciando sistema...</div>
-
     <script>
-        const log = (msg) => {
-            const c = document.getElementById('console');
-            const time = new Date().toLocaleTimeString();
-            c.innerHTML += `<div>[${time}] > ${msg}</div>`;
-            c.scrollTop = c.scrollHeight;
+        const API_KEY = "7e5869c8f17e379b2fb01044d84f08735d5dd32bd8cacd175357d4510e6cc000";
+        const headers = { 'Authorization': `Token ${API_KEY}` };
+
+        // --- DATOS REALES ENCONTRADOS (ABRIL 2026) ---
+        const STATS_MANUAL = {
+            brent: { max: 111.80, min: 91.70 },
+            wti:   { max: 117.57, min: 96.50 }
         };
 
-        const TOKEN = "d0fe91b38b11caf283f0fe96e05992e7f3807eae0455325cd76e1f988477b685";
-        
-        function connect() {
-            log("Sincronizando con los oráculos de crudo...");
-            const ws = new WebSocket(`wss://api.oilpriceapi.com/cable?token=${TOKEN}`);
-
-            ws.onopen = () => {
-                log("Conexión Imperial establecida.");
-                ws.send(JSON.stringify({
-                    command: "subscribe",
-                    identifier: JSON.stringify({ channel: "EnergyPricesChannel" })
-                }));
-            };
-
-            ws.onmessage = (event) => {
-                const data = JSON.parse(event.data);
-                if (data.type === "ping") return;
-                
-                if (data.message && data.message.price) {
-                    const p = data.message;
-                    log(`Update: ${p.code} -> $${p.price.toFixed(2)}`);
-                    if (p.code === "BRENT_CRUDE") document.getElementById('brent').textContent = p.price.toFixed(2);
-                    if (p.code === "WTI_CRUDE") document.getElementById('wti').textContent = p.price.toFixed(2);
-                }
-            };
-
-            ws.onerror = () => log("Interrupción en la señal. Reintentando...");
-            ws.onclose = () => setTimeout(connect, 5000);
+        async function fetchCurrentPrice(code) {
+            try {
+                const res = await fetch(`https://api.oilpriceapi.com/v1/prices/latest?by_code=${code}`, { headers });
+                const json = await res.json();
+                return parseFloat(json.data.price);
+            } catch (e) {
+                return 0;
+            }
         }
 
-        connect();
+        async function updateAll() {
+            try {
+                const bPrice = await fetchCurrentPrice("BRENT_CRUDE_USD");
+                const wPrice = await fetchCurrentPrice("WTI_USD");
+
+                if(bPrice > 0) document.getElementById('brent_price').textContent = bPrice.toFixed(2);
+                if(wPrice > 0) document.getElementById('wti_price').textContent = wPrice.toFixed(2);
+
+                document.getElementById('brent_max').textContent = STATS_MANUAL.brent.max.toFixed(2);
+                document.getElementById('brent_min').textContent = STATS_MANUAL.brent.min.toFixed(2);
+                
+                document.getElementById('wti_max').textContent = STATS_MANUAL.wti.max.toFixed(2);
+                document.getElementById('wti_min').textContent = STATS_MANUAL.wti.min.toFixed(2);
+
+                document.getElementById('timestamp').textContent = new Date().toLocaleTimeString();
+            } catch (err) {
+                console.error("Error");
+            }
+        }
+
+        updateAll();
+        setInterval(updateAll, 30000);
     </script>
 </body>
 </html>

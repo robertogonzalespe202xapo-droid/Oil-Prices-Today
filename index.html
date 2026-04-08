@@ -7,580 +7,305 @@
     
     <style>
         :root {
+            --neon-blue: #00f0ff;
             --neon-green: #00ff9d;
             --neon-red: #ff2d55;
-            --neon-blue: #00f0ff;
-            --card-bg: #12171f;
-            --accent: #1f2a3f;
+            --card-bg: #0c111b;
+            --rgb-speed: 4s;
         }
 
         * { box-sizing: border-box; margin: 0; padding: 0; }
 
         body {
-            background: radial-gradient(circle at center, #1a2333 0%, #0a0e17 100%);
+            background: #050a14;
             color: #fff;
             font-family: 'Segoe UI', system-ui, sans-serif;
             min-height: 100vh;
             display: flex;
             justify-content: center;
             align-items: center;
-            padding: 15px;
-            overflow-x: hidden;
-        }
-
-        .container {
-            background: #0c111b;
-            padding: 30px 25px;
-            border-radius: 32px;
-            border: 1px solid #1f2a3f;
-            width: 100%;
-            max-width: 440px;
-            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.6),
-                        0 0 40px rgba(0, 240, 255, 0.15);
+            overflow: hidden;
             position: relative;
         }
 
-        .header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 32px;
+        /* EFECTO AGUA BRILLANTE */
+        body::before {
+            content: "";
+            position: absolute;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: 
+                radial-gradient(circle at 20% 30%, rgba(0, 240, 255, 0.1) 0%, transparent 40%),
+                radial-gradient(circle at 80% 70%, rgba(0, 255, 157, 0.1) 0%, transparent 40%),
+                radial-gradient(circle at 50% 50%, #050a14 0%, #02050a 100%);
+            z-index: -1;
+            animation: waterFlow 10s ease-in-out infinite alternate;
         }
 
-        .header h1 {
-            font-size: 1.1rem;
-            font-weight: 800;
-            letter-spacing: 6px;
-            text-transform: uppercase;
-            color: var(--neon-blue);
-            text-shadow: 0 0 15px var(--neon-blue);
+        @keyframes waterFlow {
+            0% { filter: hue-rotate(0deg) brightness(1); }
+            100% { filter: hue-rotate(20deg) brightness(1.3); }
         }
 
-        .header .version {
-            font-size: 0.65rem;
-            background: rgba(0, 240, 255, 0.1);
-            color: var(--neon-blue);
-            padding: 4px 12px;
-            border-radius: 50px;
-            border: 1px solid var(--neon-blue);
+        .container {
+            width: 100%;
+            max-width: 440px;
+            padding: 20px;
+            position: relative;
+            z-index: 1;
+        }
+
+        /* TARJETA CON BORDE RGB */
+        .card-wrapper {
+            position: relative;
+            padding: 2px; /* Espacio para el borde */
+            border-radius: 26px;
+            margin-bottom: 25px;
+            background: linear-gradient(var(--rgb-speed) linear infinite, #00f0ff, #00ff9d, #00f0ff);
+            overflow: hidden;
+        }
+
+        .card-wrapper::before {
+            content: "";
+            position: absolute;
+            top: -50%; left: -50%; width: 200%; height: 200%;
+            background: conic-gradient(
+                transparent, var(--neon-blue), var(--neon-green), transparent 30%
+            );
+            animation: rotateRGB var(--rgb-speed) linear infinite;
+        }
+
+        @keyframes rotateRGB {
+            from { transform: rotate(0deg); }
+            to { transform: rotate(360deg); }
         }
 
         .card {
             background: var(--card-bg);
             border-radius: 24px;
-            padding: 28px 20px;
-            margin-bottom: 24px;
-            border: 1px solid var(--accent);
-            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-            cursor: pointer;
+            padding: 25px;
             position: relative;
-            overflow: hidden;
+            z-index: 2;
+            backdrop-filter: blur(10px);
         }
 
-        .card:hover {
-            transform: translateY(-4px);
-            box-shadow: 0 15px 30px rgba(0, 240, 255, 0.25);
-            border-color: var(--neon-blue);
+        .header {
+            text-align: center;
+            margin-bottom: 25px;
+        }
+
+        .header h1 {
+            font-size: 1rem;
+            letter-spacing: 4px;
+            color: var(--neon-blue);
+            text-shadow: 0 0 10px var(--neon-blue);
+            text-transform: uppercase;
         }
 
         .label {
-            font-size: 0.78rem;
+            font-size: 0.7rem;
             color: #7eb8ff;
-            font-weight: 800;
-            letter-spacing: 3px;
-            margin-bottom: 12px;
-            display: flex;
-            align-items: center;
-            gap: 8px;
+            letter-spacing: 2px;
+            font-weight: bold;
         }
 
         .price-main {
             font-family: 'Courier New', monospace;
-            font-size: 4.8rem;
+            font-size: 4rem;
             font-weight: 700;
-            line-height: 1;
-            margin: 8px 0 12px;
-            text-shadow: 0 0 20px rgba(255,255,255,0.15);
-            transition: all 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+            margin: 10px 0;
+            transition: 0.5s;
         }
 
         .change {
-            font-family: 'Courier New', monospace;
-            font-size: 1rem;
-            font-weight: 700;
-            margin-bottom: 16px;
-            display: flex;
-            align-items: center;
-            gap: 6px;
+            font-size: 0.9rem;
+            font-weight: bold;
+            margin-bottom: 15px;
         }
 
         .positive { color: var(--neon-green); }
         .negative { color: var(--neon-red); }
 
-        .stat-row {
-            display: flex;
-            justify-content: space-between;
-            gap: 12px;
-            margin-bottom: 18px;
-        }
-
-        .stat-box {
-            font-family: 'Courier New', monospace;
-            font-size: 0.75rem;
-            padding: 8px 16px;
-            border-radius: 8px;
-            font-weight: 700;
-            flex: 1;
-            text-align: center;
-            letter-spacing: 1px;
-        }
-
-        .max-box {
-            border: 1px solid var(--neon-green);
-            color: var(--neon-green);
-            background: rgba(0, 255, 157, 0.08);
-        }
-
-        .min-box {
-            border: 1px solid var(--neon-red);
-            color: var(--neon-red);
-            background: rgba(255, 45, 85, 0.08);
-        }
-
-        .sparkline-container {
-            height: 68px;
-            margin-top: 8px;
-            position: relative;
-        }
-
-        .sparkline {
-            width: 100%;
-            height: 100%;
-            filter: drop-shadow(0 0 6px currentColor);
-        }
-
         .status-bar {
-            margin-top: 12px;
             display: flex;
             justify-content: space-between;
             align-items: center;
-            font-size: 0.7rem;
+            font-size: 0.65rem;
             color: #456;
-            text-transform: uppercase;
-            letter-spacing: 1px;
-            gap: 8px;
+            margin-top: 10px;
         }
 
-        .live-dot {
-            display: inline-block;
-            width: 8px; height: 8px;
-            background: var(--neon-green);
-            border-radius: 50%;
-            margin-right: 6px;
-            box-shadow: 0 0 12px var(--neon-green);
-            animation: pulse 1.8s infinite;
+        .btn-action {
+            background: rgba(0, 240, 255, 0.1);
+            border: 1px solid var(--neon-blue);
+            color: var(--neon-blue);
+            padding: 5px 12px;
+            border-radius: 20px;
+            cursor: pointer;
+            font-size: 0.7rem;
+            transition: 0.3s;
         }
 
-        @keyframes pulse { 
-            0%, 100% { opacity: 1; } 
-            50% { opacity: 0.3; } 
-        }
+        .btn-action:hover { background: var(--neon-blue); color: #000; }
 
+        /* MODAL */
         .modal {
             display: none;
             position: fixed;
-            top: 0; left: 0;
-            width: 100%; height: 100%;
-            background: rgba(10, 14, 23, 0.95);
-            z-index: 1000;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0,0,0,0.9);
+            z-index: 100;
             align-items: center;
             justify-content: center;
-            backdrop-filter: blur(8px);
+            backdrop-filter: blur(10px);
         }
 
         .modal-content {
             background: #0c111b;
-            border-radius: 24px;
-            width: 92%;
-            max-width: 440px;
-            padding: 30px;
+            width: 90%;
+            max-width: 400px;
+            padding: 20px;
+            border-radius: 20px;
             border: 1px solid #1f2a3f;
-            box-shadow: 0 30px 60px rgba(0,0,0,0.6);
-            animation: modalPop 0.3s ease;
-            max-height: 85vh;
-            display: flex;
-            flex-direction: column;
         }
 
-        .modal-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 20px;
-        }
-
-        .modal-title {
-            font-size: 1.3rem;
-            color: var(--neon-blue);
-        }
-
-        .close {
-            font-size: 2rem;
-            cursor: pointer;
-            color: #666;
-            line-height: 1;
-        }
-
-        .tab-bar {
-            display: flex;
-            background: rgba(255,255,255,0.05);
-            border-radius: 12px;
-            padding: 4px;
-            margin-bottom: 20px;
-        }
-
-        .tab {
-            flex: 1;
+        .console {
+            background: #000;
+            font-family: monospace;
             padding: 10px;
-            text-align: center;
+            height: 200px;
+            overflow-y: auto;
+            font-size: 0.7rem;
+            color: #0f0;
             border-radius: 10px;
-            font-weight: 700;
-            font-size: 0.85rem;
-            cursor: pointer;
-            transition: all 0.3s;
-        }
-
-        .tab.active {
-            background: #1f2a3f;
-            color: var(--neon-blue);
-        }
-
-        .log-list {
-            flex: 1;
-            overflow-y: auto;
-            max-height: 420px;
-            padding-right: 8px;
-        }
-
-        .log-entry {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            background: rgba(255,255,255,0.05);
-            padding: 12px;
-            border-radius: 12px;
-            margin-bottom: 10px;
-            font-size: 0.85rem;
-            font-family: 'Courier New', monospace;
-        }
-
-        .log-time { color: #7eb8ff; font-size: 0.75rem; }
-        .log-prices { display: flex; gap: 16px; }
-        .log-error { color: var(--neon-red); font-size: 0.7rem; }
-        .log-success { color: var(--neon-green); }
-
-        .console-output {
-            font-family: 'Courier New', monospace;
-            font-size: 0.75rem;
-            line-height: 1.4;
-            color: #888;
-            background: #0a0e17;
-            padding: 14px;
-            border-radius: 12px;
-            white-space: pre-wrap;
-            max-height: 420px;
-            overflow-y: auto;
-        }
-
-        .loading {
-            animation: loadingPulse 1.5s infinite;
-            opacity: 0.6;
-        }
-
-        @keyframes loadingPulse {
-            0%, 100% { opacity: 0.6; }
-            50% { opacity: 1; }
-        }
-
-        .refresh-btn {
-            background: transparent;
-            border: 2px solid var(--neon-blue);
-            color: var(--neon-blue);
-            width: 36px;
-            height: 36px;
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 1.3rem;
-            cursor: pointer;
-            transition: all 0.3s ease;
-        }
-
-        .refresh-btn:hover {
-            background: var(--neon-blue);
-            color: #0c111b;
-            transform: rotate(180deg);
-        }
-
-        .error-msg {
-            color: var(--neon-red);
-            font-size: 0.75rem;
-            text-align: center;
-            margin-top: 8px;
-        }
-
-        .history-btn {
-            background: rgba(0, 240, 255, 0.1);
-            color: var(--neon-blue);
-            border: 1px solid var(--neon-blue);
-            padding: 6px 14px;
-            border-radius: 50px;
-            font-size: 0.75rem;
-            font-weight: 700;
-            cursor: pointer;
-            display: flex;
-            align-items: center;
-            gap: 6px;
         }
     </style>
 </head>
 <body>
-    <div class="container" id="mainContainer">
+
+    <div class="container">
         <div class="header">
             <h1>Oil Tracker Pro • 2026</h1>
-            <div class="version">LIVE • commoditypriceapi.com</div>
+            <p style="font-size: 0.6rem; opacity: 0.5;">ACTUALIZACIÓN DIARIA: 07:00 AM</p>
         </div>
-        
-        <!-- BRENT CARD -->
-        <div class="card" id="brent-card">
-            <span class="label">BRENT CRUDE <span style="font-size:0.6rem; opacity:0.6;">(USD/bbl)</span></span>
-            <div id="brent_price" class="price-main">00.00</div>
-            <div id="brent_change" class="change">—</div>
-            <div class="stat-row">
-                <div class="stat-box max-box">MAX MES: <span id="brent_max">111.80</span></div>
-                <div class="stat-box min-box">MIN MES: <span id="brent_min">91.70</span></div>
-            </div>
-            <div class="sparkline-container">
-                <canvas id="brent_spark" class="sparkline" width="380" height="68"></canvas>
+
+        <div class="card-wrapper">
+            <div class="card">
+                <div class="label">BRENT CRUDE (USD)</div>
+                <div id="brent_price" class="price-main">--.--</div>
+                <div id="brent_change" class="change">SIN DATOS</div>
             </div>
         </div>
 
-        <!-- WTI CARD -->
-        <div class="card" id="wti-card">
-            <span class="label">WTI CRUDE <span style="font-size:0.6rem; opacity:0.6;">(USD/bbl)</span></span>
-            <div id="wti_price" class="price-main">00.00</div>
-            <div id="wti_change" class="change">—</div>
-            <div class="stat-row">
-                <div class="stat-box max-box">MAX MES: <span id="wti_max">117.57</span></div>
-                <div class="stat-box min-box">MIN MES: <span id="wti_min">96.50</span></div>
-            </div>
-            <div class="sparkline-container">
-                <canvas id="wti_spark" class="sparkline" width="380" height="68"></canvas>
+        <div class="card-wrapper">
+            <div class="card">
+                <div class="label">WTI CRUDE (USD)</div>
+                <div id="wti_price" class="price-main">--.--</div>
+                <div id="wti_change" class="change">SIN DATOS</div>
             </div>
         </div>
 
         <div class="status-bar">
-            <span><span class="live-dot"></span>LIVE FEED • commoditypriceapi.com</span>
-            <span id="timestamp">--:--:--</span>
-            <button id="refresh-btn" class="refresh-btn" title="Actualizar ahora">↻</button>
-            <button id="history-btn" class="history-btn" title="Historial + Consola">
-                📜 Historial
-            </button>
+            <div id="next-update">Próxima carga: --:--</div>
+            <button class="btn-action" onclick="fetchPrices()">Actualizar Ahora</button>
+            <button class="btn-action" onclick="toggleModal()">Logs</button>
         </div>
-
-        <div id="error-container" class="error-msg" style="display:none;"></div>
     </div>
 
-    <!-- MODAL HISTORIAL + CONSOLA -->
     <div id="modal" class="modal">
         <div class="modal-content">
-            <div class="modal-header">
-                <div class="modal-title" id="modal-title">📜 Historial de Requests &amp; Consola</div>
-                <span class="close" id="modal-close">×</span>
-            </div>
-
-            <div class="tab-bar">
-                <div class="tab active" id="tab-history" onclick="switchTab(0)">Historial de Precios</div>
-                <div class="tab" id="tab-console" onclick="switchTab(1)">Consola de Errores</div>
-            </div>
-
-            <!-- TAB 1: HISTORIAL -->
-            <div id="panel-history" class="log-list">
-                <!-- Se llena con JS -->
-            </div>
-
-            <!-- TAB 2: CONSOLA -->
-            <div id="panel-console" class="log-list" style="display:none;">
-                <div id="console-output" class="console-output">
-                    [Consola iniciada] • Esperando requests...
-                </div>
-            </div>
-
-            <button onclick="clearHistory()" 
-                    style="margin-top:16px; width:100%; padding:12px; background:#1f2a3f; color:#fff; border:none; border-radius:12px; font-weight:700;">
-                🗑️ Limpiar Historial
-            </button>
+            <h3 style="margin-bottom:10px">System Logs</h3>
+            <div id="console" class="console"></div>
+            <button class="btn-action" style="width:100%; margin-top:10px" onclick="toggleModal()">Cerrar</button>
         </div>
     </div>
 
     <script>
-        // ==================== CONFIG ====================
-        const API_KEY = "81910c5e-8464-4658-9379-ff3c7199fc75";
-        const BASE_URL = "https://api.commoditypriceapi.com/v2/rates/latest";
+        const API_KEY = "7e5869c8f17e379b2fb01044d84f08735d5dd32bd8cacd175357d4510e6cc000";
+        const BASE_URL = "https://www.oilpriceapi.com/api/v1/prices/latest";
 
-        const MONTH_STATS = {
-            brent: { max: 111.80, min: 91.70 },
-            wti:   { max: 117.57, min: 96.50 }
-        };
-
-        // ==================== CÓDIGOS DE ERROR OFICIALES (para identificar rápido) ====================
-        const ERROR_CODES = {
-            E001: "Clave API inválida o no autorizada",
-            E002: "Rate limit excedido (demasiadas peticiones este mes)",
-            E003: "Error de red / sin conexión a internet",
-            E004: "Respuesta JSON inválida o corrupta",
-            E005: "Símbolos de commodity no reconocidos por la API",
-            E006: "API temporalmente fuera de servicio o mantenimiento",
-            E007: "Parámetros incorrectos en la URL (endpoint o query)",
-            E008: "Timeout de la petición (servidor lento)",
-            E009: "Error desconocido / excepción no controlada"
-        };
-
-        // Historial global de requests (máximo 30 entradas)
-        let requestHistory = [];
-        let consoleLogs = [];
-
-        // Datos para sparklines y cambios
-        let brentHistory = [];
-        let wtiHistory = [];
         let lastBrent = null;
         let lastWTI = null;
 
-        // ==================== LOGGING ====================
-        function addToHistory(brent, wti, success, errorCode = null, rawMessage = "") {
-            const entry = {
-                id: Date.now(),
-                timestamp: new Date().toLocaleTimeString('es-MX', { hour: '2-digit', minute: '2-digit', second: '2-digit' }),
-                brent: brent || null,
-                wti: wti || null,
-                success: success,
-                errorCode: errorCode,
-                message: rawMessage
-            };
-            requestHistory.unshift(entry);
-            if (requestHistory.length > 30) requestHistory.pop();
-
-            // También agregamos a la consola
-            const logLine = `[${entry.timestamp}] ${success ? '✅' : '❌'} \( {errorCode || ''} | Brent: \){brent||'--'} WTI:${wti||'--'} | ${rawMessage.substring(0,80)}`;
-            consoleLogs.unshift(logLine);
-            if (consoleLogs.length > 50) consoleLogs.pop();
-
-            renderHistory();
-            renderConsole();
+        function log(msg) {
+            const consoleEl = document.getElementById('console');
+            const time = new Date().toLocaleTimeString();
+            consoleEl.innerHTML += `<div>[${time}] ${msg}</div>`;
+            consoleEl.scrollTop = consoleEl.scrollHeight;
         }
 
-        function renderHistory() {
-            const container = document.getElementById('panel-history');
-            container.innerHTML = requestHistory.length === 0 
-                ? `<div style="text-align:center; padding:30px; color:#666;">Aún no hay requests...</div>`
-                : requestHistory.map(entry => `
-                    <div class="log-entry">
-                        <div>
-                            <div class="log-time">${entry.timestamp}</div>
-                            <div style="margin-top:4px;">
-                                ${entry.success 
-                                    ? `<span class="log-success">✅ OK</span>` 
-                                    : `<span class="log-error">❌ ${entry.errorCode || 'ERROR'}</span>`}
-                            </div>
-                        </div>
-                        <div class="log-prices">
-                            <div><strong>BRENT</strong><br>${entry.brent ? entry.brent.toFixed(2) : '--'}</div>
-                            <div><strong>WTI</strong><br>${entry.wti ? entry.wti.toFixed(2) : '--'}</div>
-                        </div>
-                    </div>
-                `).join('');
-        }
-
-        function renderConsole() {
-            const output = document.getElementById('console-output');
-            output.textContent = consoleLogs.length === 0 
-                ? "[Consola iniciada] • Esperando requests...\n" 
-                : consoleLogs.join('\n');
-            output.scrollTop = 0;
-        }
-
-        function clearHistory() {
-            if (confirm("¿Borrar todo el historial y consola?")) {
-                requestHistory = [];
-                consoleLogs = [];
-                renderHistory();
-                renderConsole();
-            }
-        }
-
-        function switchTab(tab) {
-            document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
-            document.getElementById(tab === 0 ? 'tab-history' : 'tab-console').classList.add('active');
-            
-            document.getElementById('panel-history').style.display = tab === 0 ? 'block' : 'none';
-            document.getElementById('panel-console').style.display = tab === 1 ? 'block' : 'none';
-        }
-
-        // ==================== FETCH CORREGIDO (endpoint correcto) ====================
-        async function fetchLatestPrices() {
-            const startTime = Date.now();
+        async function fetchPrices() {
+            log("Iniciando request a OilPriceAPI...");
             try {
-                const url = `\( {BASE_URL}?apiKey= \){API_KEY}&symbols=WTIOIL-FUT,BRENTOIL-FUT&quote=USD`;
-                
-                const res = await fetch(url, { 
-                    cache: 'no-store',
-                    headers: { 'Accept': 'application/json' }
+                // Brent
+                const resBrent = await fetch(`${BASE_URL}?by_code=BRENT_CRUDE`, {
+                    headers: { 'Authorization': `Token ${API_KEY}`, 'Content-Type': 'application/json' }
                 });
+                const dataBrent = await resBrent.json();
 
-                if (!res.ok) {
-                    if (res.status === 429) throw { code: 'E002', msg: 'Rate limit' };
-                    if (res.status === 401 || res.status === 403) throw { code: 'E001', msg: 'API key inválida' };
-                    throw { code: 'E007', msg: `HTTP ${res.status}` };
+                // WTI
+                const resWTI = await fetch(`${BASE_URL}?by_code=WTI_CRUDE`, {
+                    headers: { 'Authorization': `Token ${API_KEY}`, 'Content-Type': 'application/json' }
+                });
+                const dataWTI = await resWTI.json();
+
+                if(dataBrent.data && dataWTI.data) {
+                    updateUI('brent', dataBrent.data.price, lastBrent);
+                    updateUI('wti', dataWTI.data.price, lastWTI);
+                    lastBrent = dataBrent.data.price;
+                    lastWTI = dataWTI.data.price;
+                    log("Precios actualizados con éxito.");
                 }
+            } catch (error) {
+                log("Error de conexión: " + error.message);
+            }
+            scheduleNextUpdate();
+        }
 
-                const json = await res.json();
-
-                if (!json.success || !json.rates) {
-                    throw { code: 'E004', msg: 'Respuesta inválida' };
-                }
-
-                const brent = parseFloat(json.rates['BRENTOIL-FUT']) || 0;
-                const wti   = parseFloat(json.rates['WTIOIL-FUT'])   || 0;
-
-                addToHistory(brent, wti, true);
-                return { brent, wti };
-
-            } catch (err) {
-                const errorObj = err.code ? err : { code: 'E009', msg: err.message || 'Error desconocido' };
-                addToHistory(null, null, false, errorObj.code, errorObj.msg);
-                throw errorObj;
+        function updateUI(type, price, previous) {
+            const priceEl = document.getElementById(`${type}_price`);
+            const changeEl = document.getElementById(`${type}_change`);
+            
+            priceEl.innerText = price.toFixed(2);
+            
+            if (previous) {
+                const diff = price - previous;
+                const pct = ((diff / previous) * 100).toFixed(2);
+                const isPos = diff >= 0;
+                changeEl.className = `change ${isPos ? 'positive' : 'negative'}`;
+                changeEl.innerText = `${isPos ? '▲' : '▼'} ${Math.abs(diff).toFixed(2)} (${pct}%)`;
+            } else {
+                changeEl.innerText = "ESPERANDO TENDENCIA";
             }
         }
 
-        // ==================== RESTO DE FUNCIONES (igual que antes) ====================
-        function showLoading() {
-            document.getElementById('brent_price').classList.add('loading');
-            document.getElementById('wti_price').classList.add('loading');
-        }
+        function scheduleNextUpdate() {
+            const now = new Date();
+            let next = new Date();
+            
+            next.setHours(7, 0, 0, 0); // Programar para las 7:00 AM
 
-        function hideLoading() {
-            document.getElementById('brent_price').classList.remove('loading');
-            document.getElementById('wti_price').classList.remove('loading');
-        }
-
-        function updateChangeDisplay(id, current, previous) {
-            const changeEl = document.getElementById(id);
-            if (!previous) {
-                changeEl.innerHTML = `<span style="opacity:0.5">—</span>`;
-                return;
+            // Si ya pasaron las 7 AM hoy, programar para mañana
+            if (now >= next) {
+                next.setDate(next.getDate() + 1);
             }
-            const diff = current - previous;
-            const pct = (diff / previous * 100).toFixed(2);
-            const isPositive = diff >= 0;
-            changeEl.innerHTML = `${isPositive ? '▲' : '▼'} \( {diff.toFixed(2)} <span style="font-size:0.85rem"
+
+            const diff = next - now;
+            document.getElementById('next-update').innerText = `Sig. carga: ${next.toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})}`;
+            
+            log(`Próximo auto-refresh en ${Math.round(diff/1000/60)} minutos.`);
+            
+            setTimeout(fetchPrices, diff);
+        }
+
+        function toggleModal() {
+            const m = document.getElementById('modal');
+            m.style.display = m.style.display === 'flex' ? 'none' : 'flex';
+        }
+
+        // Inicio
+        window.onload = () => {
+            fetchPrices();
+        };
+    </script>
+</body>
+</html>

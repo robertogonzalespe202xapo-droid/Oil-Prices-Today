@@ -10,7 +10,6 @@
             --neon-green: #00ff9d;
             --neon-red: #ff2d55;
             --neon-blue: #00f0ff;
-            --bg: #0a0e17;
             --card-bg: #12171f;
         }
 
@@ -19,7 +18,7 @@
         body {
             background: radial-gradient(circle at center, #1a2333 0%, #0a0e17 100%);
             color: #fff;
-            font-family: 'Segoe UI', system-ui, sans-serif;
+            font-family: 'Segoe UI', sans-serif;
             min-height: 100vh;
             display: flex;
             justify-content: center;
@@ -29,185 +28,175 @@
 
         .container {
             background: #0c111b;
-            padding: 35px 25px;
+            padding: 30px;
             border-radius: 32px;
             border: 1px solid #1f2a3f;
             width: 100%;
-            max-width: 450px;
-            box-shadow: 0 0 80px rgba(0, 0, 0, 0.5);
+            max-width: 420px;
+            box-shadow: 0 20px 50px rgba(0,0,0,0.5);
         }
 
         .header h1 {
             text-align: center;
-            font-size: 0.9rem;
+            font-size: 0.8rem;
             color: var(--neon-blue);
-            letter-spacing: 5px;
+            letter-spacing: 4px;
             text-transform: uppercase;
-            margin-bottom: 35px;
-            opacity: 0.8;
+            margin-bottom: 30px;
+            opacity: 0.9;
         }
 
         .card {
             background: var(--card-bg);
-            border-radius: 20px;
-            padding: 20px;
-            margin-bottom: 20px;
+            border-radius: 24px;
+            padding: 25px 15px;
+            margin-bottom: 25px;
             border: 1px solid #1f2a3f;
             display: flex;
             flex-direction: column;
             align-items: center;
-            position: relative;
+            transition: all 0.3s ease;
         }
 
         .label {
-            font-size: 0.7rem;
-            color: #567;
+            font-size: 0.75rem;
+            color: #7eb8ff;
             font-weight: 800;
             letter-spacing: 2px;
             margin-bottom: 15px;
         }
 
-        /* Estilo Sándwich */
+        .price-main {
+            font-family: 'DS-Digital', monospace;
+            font-size: 5rem;
+            font-weight: bold;
+            color: #ffffff;
+            line-height: 0.9;
+            margin: 10px 0;
+        }
+
         .stat-box {
             font-family: 'Courier New', monospace;
-            font-size: 0.75rem;
-            padding: 4px 12px;
-            border-radius: 6px;
+            font-size: 0.7rem;
+            padding: 5px 15px;
+            border-radius: 4px;
             font-weight: bold;
-            text-transform: uppercase;
+            width: 160px;
+            text-align: center;
+            letter-spacing: 1px;
         }
 
         .max-box {
             border: 1px solid var(--neon-green);
             color: var(--neon-green);
             background: rgba(0, 255, 157, 0.05);
-            margin-bottom: 10px;
+            text-transform: uppercase;
         }
 
-        .change-box {
-            margin-top: 10px;
-            font-size: 0.85rem;
+        .min-box {
+            border: 1px solid var(--neon-red);
+            color: var(--neon-red);
+            background: rgba(255, 45, 85, 0.05);
+            text-transform: uppercase;
         }
-
-        .price-main {
-            font-family: 'DS-Digital', monospace;
-            font-size: 4.5rem;
-            font-weight: bold;
-            color: #ffffff; /* Precio en blanco */
-            line-height: 1;
-            text-shadow: 0 0 15px rgba(255,255,255,0.2);
-        }
-
-        /* Colores dinámicos para el cuadro inferior */
-        .bg-up { border: 1px solid var(--neon-green); color: var(--neon-green); background: rgba(0, 255, 157, 0.1); }
-        .bg-down { border: 1px solid var(--neon-red); color: var(--neon-red); background: rgba(255, 45, 85, 0.1); }
 
         .status-bar {
-            margin-top: 20px;
+            margin-top: 10px;
             display: flex;
             justify-content: space-between;
-            font-size: 0.7rem;
+            font-size: 0.65rem;
             color: #456;
+            text-transform: uppercase;
         }
 
         .live-dot {
             display: inline-block;
-            width: 8px; height: 8px;
-            background: #333;
-            border-radius: 50%;
-            margin-right: 6px;
-        }
-
-        .connected .live-dot {
+            width: 7px; height: 7px;
             background: var(--neon-green);
-            box-shadow: 0 0 10px var(--neon-green);
+            border-radius: 50%;
+            margin-right: 5px;
+            box-shadow: 0 0 8px var(--neon-green);
             animation: pulse 1.5s infinite;
         }
 
-        @keyframes pulse { 0%, 100% { opacity: 1; } 50% { opacity: 0.4; } }
+        @keyframes pulse { 0%, 100% { opacity: 1; } 50% { opacity: 0.3; } }
     </style>
 </head>
 <body>
     <div class="container" id="mainContainer">
-        <div class="header">
-            <h1>Energy Market Real-Time</h1>
-        </div>
+        <div class="header"><h1>Market Intelligence • Jun 2026</h1></div>
         
         <div class="card">
-            <span class="label">BRENT CRUDE JUN'26</span>
-            <div class="stat-box max-box">MAX MES: $<span id="brent_max">--.--</span></div>
+            <span class="label">BRENT CRUDE</span>
+            <div class="stat-box max-box">MAX MES: <span id="brent_max">0.00</span></div>
             <div id="brent_price" class="price-main">00.00</div>
-            <div id="brent_change_box" class="stat-box change-box">--.--%</div>
+            <div class="stat-box min-box">MIN MES: <span id="brent_min">0.00</span></div>
         </div>
 
         <div class="card">
-            <span class="label">WTI CRUDE JUN'26</span>
-            <div class="stat-box max-box">MAX MES: $<span id="wti_max">--.--</span></div>
+            <span class="label">WTI CRUDE</span>
+            <div class="stat-box max-box">MAX MES: <span id="wti_max">0.00</span></div>
             <div id="wti_price" class="price-main">00.00</div>
-            <div id="wti_change_box" class="stat-box change-box">--.--%</div>
+            <div class="stat-box min-box">MIN MES: <span id="wti_min">0.00</span></div>
         </div>
 
         <div class="status-bar">
-            <span><span class="live-dot"></span><span id="status">CONECTANDO...</span></span>
+            <span><span class="live-dot"></span>LIVE FEED</span>
             <span id="timestamp">--:--:--</span>
         </div>
     </div>
 
     <script>
         const API_KEY = "7e5869c8f17e379b2fb01044d84f08735d5dd32bd8cacd175357d4510e6cc000";
+        const headers = { 'Authorization': `Token ${API_KEY}` };
 
-        const els = {
-            brent: { p: document.getElementById('brent_price'), m: document.getElementById('brent_max'), c: document.getElementById('brent_change_box') },
-            wti: { p: document.getElementById('wti_price'), m: document.getElementById('wti_max'), c: document.getElementById('wti_change_box') },
-            status: document.getElementById('status'),
-            timestamp: document.getElementById('timestamp'),
-            container: document.getElementById('mainContainer')
-        };
+        async function fetchMonthStats(code) {
+            const now = new Date();
+            const firstDay = new Date(now.getFullYear(), now.getMonth(), 1).toISOString().split('T')[0];
+            // Obtenemos estadísticas del mes actual
+            const url = `https://api.oilpriceapi.com/v1/prices/stats?by_code=${code}&from=${firstDay}`;
+            
+            try {
+                const res = await fetch(url, { headers });
+                const json = await res.json();
+                return {
+                    max: json.data.max_price || 0,
+                    min: json.data.min_price || 0
+                };
+            } catch (e) { return { max: 0, min: 0 }; }
+        }
 
-        // Simulación de máximos (puedes ajustarlos manualmente o vía API)
-        let monthlyMax = { brent: 88.50, wti: 84.20 };
-        let prevPrices = { brent: 0, wti: 0 };
-
-        async function getPrice(code) {
-            const res = await fetch(`https://api.oilpriceapi.com/v1/prices/latest?by_code=${code}`, {
-                headers: { 'Authorization': `Token ${API_KEY}` }
-            });
+        async function fetchCurrentPrice(code) {
+            const res = await fetch(`https://api.oilpriceapi.com/v1/prices/latest?by_code=${code}`, { headers });
             const json = await res.json();
             return parseFloat(json.data.price);
         }
 
-        async function update() {
+        async function updateAll() {
             try {
-                const [bP, wP] = await Promise.all([getPrice("BRENT_CRUDE_USD"), getPrice("WTI_USD")]);
+                // Actualizar Brent
+                const bPrice = await fetchCurrentPrice("BRENT_CRUDE_USD");
+                const bStats = await fetchMonthStats("BRENT_CRUDE_USD");
+                document.getElementById('brent_price').textContent = bPrice.toFixed(2);
+                document.getElementById('brent_max').textContent = bStats.max.toFixed(2);
+                document.getElementById('brent_min').textContent = bStats.min.toFixed(2);
 
-                render(els.brent, bP, prevPrices.brent, monthlyMax.brent);
-                render(els.wti, wP, prevPrices.wti, monthlyMax.wti);
+                // Actualizar WTI
+                const wPrice = await fetchCurrentPrice("WTI_USD");
+                const wStats = await fetchMonthStats("WTI_USD");
+                document.getElementById('wti_price').textContent = wPrice.toFixed(2);
+                document.getElementById('wti_max').textContent = wStats.max.toFixed(2);
+                document.getElementById('wti_min').textContent = wStats.min.toFixed(2);
 
-                prevPrices.brent = bP;
-                prevPrices.wti = wP;
-
-                els.container.classList.add('connected');
-                els.status.textContent = "LIVE";
-                els.timestamp.textContent = new Date().toLocaleTimeString();
-            } catch (e) {
-                els.status.textContent = "OFFLINE";
+                document.getElementById('timestamp').textContent = new Date().toLocaleTimeString();
+            } catch (err) {
+                console.error("Error de conexión");
             }
         }
 
-        function render(elSet, price, prev, max) {
-            elSet.p.textContent = price.toFixed(2);
-            elSet.m.textContent = max.toFixed(2);
-            
-            // Calculamos el cambio respecto al cierre anterior (o el previo recibido)
-            const diff = prev > 0 ? ((price - prev) / prev) * 100 : 0;
-            const isUp = diff >= 0;
-
-            elSet.c.textContent = `${isUp ? '▲' : '▼'} ${Math.abs(diff).toFixed(2)}%`;
-            elSet.c.className = `stat-box change-box ${isUp ? 'bg-up' : 'bg-down'}`;
-        }
-
-        setInterval(update, 10000);
-        update();
+        // Ejecutar al cargar y cada 30 segundos (para no agotar la API rápidamente)
+        updateAll();
+        setInterval(updateAll, 30000);
     </script>
 </body>
 </html>

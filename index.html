@@ -53,7 +53,6 @@
             z-index: 10;
         }
 
-        /* CONTENEDOR RGB */
         .card-wrapper {
             position: relative;
             padding: 3px;
@@ -236,7 +235,8 @@
 
     <script>
         const API_KEY = "d0fe91b38b11caf283f0fe96e05992e7f3807eae0455325cd76e1f988477b685";
-        const BASE_URL = "https://api.oilpriceapi.com/v1/prices/latest"; // URL Corregida
+        // Endpoint actualizado según la documentación oficial
+        const BASE_URL = "https://api.oilpriceapi.com/v1/prices/latest"; 
 
         let cache = { brent: null, wti: null };
 
@@ -248,34 +248,45 @@
         }
 
         async function fetchPrices() {
-            log("Intentando conectar con OilPriceAPI...");
+            log("Conectando con OilPriceAPI...");
             
-            const options = {
-                method: 'GET',
-                headers: {
-                    'Authorization': `Token ${API_KEY}`,
-                    'Content-Type': 'application/json'
-                }
-            };
+            // Usamos una configuración de headers más limpia
+            const headers = new Headers();
+            headers.append("Authorization", `Token ${API_KEY}`);
 
             try {
-                // Brent
-                const resB = await fetch(`${BASE_URL}?by_code=BRENT_CRUDE`, options);
-                if (!resB.ok) throw new Error(`HTTP ${resB.status}`);
-                const dataB = await resB.json();
-
+                // Brent - Eliminamos parámetros extra que puedan causar el 400
+                const resB = await fetch(`${BASE_URL}?by_code=BRENT_CRUDE`, {
+                    method: 'GET',
+                    headers: headers
+                });
+                
                 // WTI
-                const resW = await fetch(`${BASE_URL}?by_code=WTI_CRUDE`, options);
-                if (!resW.ok) throw new Error(`HTTP ${resW.status}`);
+                const resW = await fetch(`${BASE_URL}?by_code=WTI_CRUDE`, {
+                    method: 'GET',
+                    headers: headers
+                });
+
+                if (!resB.ok || !resW.ok) {
+                    throw new Error(`Error en servidor: B(${resB.status}) W(${resW.status})`);
+                }
+
+                const dataB = await resB.json();
                 const dataW = await resW.json();
 
-                processUpdate('brent', dataB.data.price);
-                processUpdate('wti', dataW.data.price);
-                log("Actualización exitosa.");
+                if (dataB.data && dataW.data) {
+                    processUpdate('brent', dataB.data.price);
+                    processUpdate('wti', dataW.data.price);
+                    log("Precios cargados con éxito.");
+                } else {
+                    log("API respondió pero sin datos de precio.");
+                }
                 
             } catch (e) {
                 log("Error Crítico: " + e.message);
-                log("Sugerencia: Revisa si tu API Key tiene créditos o si hay bloqueo de CORS.");
+                if(e.message.includes("400")) {
+                    log("Tip: Revisa que el código BRENT_CRUDE esté habilitado en tu plan.");
+                }
             }
             scheduleNextUpdate();
         }

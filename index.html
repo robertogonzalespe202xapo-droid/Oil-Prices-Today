@@ -17,7 +17,7 @@
         * { box-sizing: border-box; margin: 0; padding: 0; }
 
         body {
-            background: linear-gradient(135deg, #0a0e17 0%, #1a2333 100%);
+            background: radial-gradient(circle at center, #1a2333 0%, #0a0e17 100%);
             color: #fff;
             font-family: 'Segoe UI', system-ui, sans-serif;
             min-height: 100vh;
@@ -30,201 +30,184 @@
         .container {
             background: #0c111b;
             padding: 35px 25px;
-            border-radius: 28px;
+            border-radius: 32px;
             border: 1px solid #1f2a3f;
             width: 100%;
-            max-width: 480px;
-            box-shadow: 0 0 100px rgba(0, 240, 255, 0.15), inset 0 0 50px rgba(0,0,0,0.8);
+            max-width: 450px;
+            box-shadow: 0 0 80px rgba(0, 0, 0, 0.5);
         }
 
         .header h1 {
             text-align: center;
-            font-size: clamp(1rem, 4.5vw, 1.3rem);
+            font-size: 0.9rem;
             color: var(--neon-blue);
-            letter-spacing: 6px;
+            letter-spacing: 5px;
             text-transform: uppercase;
-            margin-bottom: 40px;
-            text-shadow: 0 0 20px rgba(0, 240, 255, 0.7);
+            margin-bottom: 35px;
+            opacity: 0.8;
         }
 
         .card {
             background: var(--card-bg);
-            border-radius: 24px;
-            padding: 26px 20px;
-            margin-bottom: 24px;
+            border-radius: 20px;
+            padding: 20px;
+            margin-bottom: 20px;
             border: 1px solid #1f2a3f;
-            box-shadow: 0 10px 35px rgba(0,0,0,0.7);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            position: relative;
         }
 
         .label {
-            font-size: 0.85rem;
-            color: #7eb8ff;
-            font-weight: 900;
-            letter-spacing: 3px;
-            text-transform: uppercase;
-            margin-bottom: 14px;
+            font-size: 0.7rem;
+            color: #567;
+            font-weight: 800;
+            letter-spacing: 2px;
+            margin-bottom: 15px;
         }
 
-        .price-row {
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 18px;
-        }
-
-        .price {
-            font-family: 'DS-Digital', monospace;
-            font-size: clamp(3.6rem, 11vw, 5.6rem);
-            font-weight: bold;
-            line-height: 1;
-            letter-spacing: -4px;
-        }
-
-        .up { color: var(--neon-green); text-shadow: 0 0 25px var(--neon-green), 0 0 55px rgba(0,255,157,0.85); }
-        .down { color: var(--neon-red); text-shadow: 0 0 25px var(--neon-red), 0 0 55px rgba(255,45,85,0.85); }
-
-        .percent {
+        /* Estilo Sándwich */
+        .stat-box {
             font-family: 'Courier New', monospace;
-            font-size: 1.65rem;
-            font-weight: 700;
-            min-width: 100px;
+            font-size: 0.75rem;
+            padding: 4px 12px;
+            border-radius: 6px;
+            font-weight: bold;
+            text-transform: uppercase;
         }
+
+        .max-box {
+            border: 1px solid var(--neon-green);
+            color: var(--neon-green);
+            background: rgba(0, 255, 157, 0.05);
+            margin-bottom: 10px;
+        }
+
+        .change-box {
+            margin-top: 10px;
+            font-size: 0.85rem;
+        }
+
+        .price-main {
+            font-family: 'DS-Digital', monospace;
+            font-size: 4.5rem;
+            font-weight: bold;
+            color: #ffffff; /* Precio en blanco */
+            line-height: 1;
+            text-shadow: 0 0 15px rgba(255,255,255,0.2);
+        }
+
+        /* Colores dinámicos para el cuadro inferior */
+        .bg-up { border: 1px solid var(--neon-green); color: var(--neon-green); background: rgba(0, 255, 157, 0.1); }
+        .bg-down { border: 1px solid var(--neon-red); color: var(--neon-red); background: rgba(255, 45, 85, 0.1); }
 
         .status-bar {
-            margin-top: 32px;
-            padding-top: 20px;
-            border-top: 1px solid #1f2a3f;
+            margin-top: 20px;
             display: flex;
             justify-content: space-between;
-            font-size: 0.74rem;
-            color: #777;
+            font-size: 0.7rem;
+            color: #456;
         }
 
         .live-dot {
             display: inline-block;
-            width: 10px; height: 10px;
+            width: 8px; height: 8px;
             background: #333;
             border-radius: 50%;
-            margin-right: 8px;
+            margin-right: 6px;
         }
 
         .connected .live-dot {
             background: var(--neon-green);
-            box-shadow: 0 0 18px var(--neon-green);
-            animation: pulse 1.4s infinite;
+            box-shadow: 0 0 10px var(--neon-green);
+            animation: pulse 1.5s infinite;
         }
 
-        @keyframes pulse { 0%, 100% { opacity: 1; } 50% { opacity: 0.35; } }
-
-        .footer { text-align: center; margin-top: 28px; font-size: 0.68rem; color: #555; }
-        .error { color: #ff6666; }
+        @keyframes pulse { 0%, 100% { opacity: 1; } 50% { opacity: 0.4; } }
     </style>
 </head>
 <body>
     <div class="container" id="mainContainer">
         <div class="header">
-            <h1>FUTUROS BRENT • WTI • JUN 2026</h1>
+            <h1>Energy Market Real-Time</h1>
         </div>
         
         <div class="card">
-            <span class="label">BRENT CRUDE • JUN'26</span>
-            <div class="price-row">
-                <span id="brent_price" class="price">000.00</span>
-                <span id="brent_percent" class="percent">+0.00%</span>
-            </div>
+            <span class="label">BRENT CRUDE JUN'26</span>
+            <div class="stat-box max-box">MAX MES: $<span id="brent_max">--.--</span></div>
+            <div id="brent_price" class="price-main">00.00</div>
+            <div id="brent_change_box" class="stat-box change-box">--.--%</div>
         </div>
 
         <div class="card">
-            <span class="label">WTI CRUDE • JUN'26</span>
-            <div class="price-row">
-                <span id="wti_price" class="price">000.00</span>
-                <span id="wti_percent" class="percent">+0.00%</span>
-            </div>
+            <span class="label">WTI CRUDE JUN'26</span>
+            <div class="stat-box max-box">MAX MES: $<span id="wti_max">--.--</span></div>
+            <div id="wti_price" class="price-main">00.00</div>
+            <div id="wti_change_box" class="stat-box change-box">--.--%</div>
         </div>
 
         <div class="status-bar">
             <span><span class="live-dot"></span><span id="status">CONECTANDO...</span></span>
             <span id="timestamp">--:--:--</span>
         </div>
-
-        <div class="footer">Datos reales vía OilPriceAPI.com</div>
     </div>
 
     <script>
         const API_KEY = "7e5869c8f17e379b2fb01044d84f08735d5dd32bd8cacd175357d4510e6cc000";
 
         const els = {
-            brentPrice: document.getElementById('brent_price'),
-            brentPercent: document.getElementById('brent_percent'),
-            wtiPrice: document.getElementById('wti_price'),
-            wtiPercent: document.getElementById('wti_percent'),
+            brent: { p: document.getElementById('brent_price'), m: document.getElementById('brent_max'), c: document.getElementById('brent_change_box') },
+            wti: { p: document.getElementById('wti_price'), m: document.getElementById('wti_max'), c: document.getElementById('wti_change_box') },
             status: document.getElementById('status'),
             timestamp: document.getElementById('timestamp'),
             container: document.getElementById('mainContainer')
         };
 
-        let brentPrev = 0, wtiPrev = 0;
+        // Simulación de máximos (puedes ajustarlos manualmente o vía API)
+        let monthlyMax = { brent: 88.50, wti: 84.20 };
+        let prevPrices = { brent: 0, wti: 0 };
 
         async function getPrice(code) {
             const res = await fetch(`https://api.oilpriceapi.com/v1/prices/latest?by_code=${code}`, {
-                headers: { 
-                    'Authorization': `Token ${API_KEY}`,
-                    'Content-Type': 'application/json'
-                }
+                headers: { 'Authorization': `Token ${API_KEY}` }
             });
-
-            if (!res.ok) throw new Error(`HTTP ${res.status}`);
             const json = await res.json();
-            return parseFloat(json.data.price || json.data.formatted.replace(/[^0-9.]/g, ''));
+            return parseFloat(json.data.price);
         }
 
-        async function fetchOilPrices() {
+        async function update() {
             try {
-                els.status.textContent = "ACTUALIZANDO...";
-                els.status.classList.remove('error');
+                const [bP, wP] = await Promise.all([getPrice("BRENT_CRUDE_USD"), getPrice("WTI_USD")]);
 
-                const [brentPrice, wtiPrice] = await Promise.all([
-                    getPrice("BRENT_CRUDE_USD"),
-                    getPrice("WTI_USD")
-                ]);
+                render(els.brent, bP, prevPrices.brent, monthlyMax.brent);
+                render(els.wti, wP, prevPrices.wti, monthlyMax.wti);
 
-                // Actualizar Brent
-                if (brentPrev === 0) brentPrev = brentPrice;
-                updateDisplay(els.brentPrice, els.brentPercent, brentPrice, brentPrev);
-                brentPrev = brentPrice;
-
-                // Actualizar WTI
-                if (wtiPrev === 0) wtiPrev = wtiPrice;
-                updateDisplay(els.wtiPrice, els.wtiPercent, wtiPrice, wtiPrev);
-                wtiPrev = wtiPrice;
+                prevPrices.brent = bP;
+                prevPrices.wti = wP;
 
                 els.container.classList.add('connected');
-                els.status.textContent = "LIVE • CONECTADO";
-                els.timestamp.textContent = new Date().toLocaleTimeString('es-MX', { hour12: false });
-
-            } catch (err) {
-                console.error(err);
-                els.status.textContent = "ERROR AL OBTENER DATOS - Reintentando...";
-                els.status.classList.add('error');
+                els.status.textContent = "LIVE";
+                els.timestamp.textContent = new Date().toLocaleTimeString();
+            } catch (e) {
+                els.status.textContent = "OFFLINE";
             }
         }
 
-        function updateDisplay(priceEl, percentEl, newPrice, prevPrice) {
-            const diff = prevPrice > 0 ? ((newPrice - prevPrice) / prevPrice) * 100 : 0;
+        function render(elSet, price, prev, max) {
+            elSet.p.textContent = price.toFixed(2);
+            elSet.m.textContent = max.toFixed(2);
+            
+            // Calculamos el cambio respecto al cierre anterior (o el previo recibido)
+            const diff = prev > 0 ? ((price - prev) / prev) * 100 : 0;
             const isUp = diff >= 0;
 
-            priceEl.textContent = newPrice.toFixed(2);
-            percentEl.textContent = `${isUp ? '+' : ''}${diff.toFixed(2)}%`;
-            percentEl.style.color = isUp ? 'var(--neon-green)' : 'var(--neon-red)';
-            priceEl.className = `price ${isUp ? 'up' : 'down'}`;
+            elSet.c.textContent = `${isUp ? '▲' : '▼'} ${Math.abs(diff).toFixed(2)}%`;
+            elSet.c.className = `stat-box change-box ${isUp ? 'bg-up' : 'bg-down'}`;
         }
 
-        function init() {
-            fetchOilPrices();
-            setInterval(fetchOilPrices, 10000);   // cada 10 segundos
-        }
-
-        window.onload = init;
+        setInterval(update, 10000);
+        update();
     </script>
 </body>
 </html>

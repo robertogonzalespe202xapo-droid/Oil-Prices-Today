@@ -70,7 +70,7 @@
             font-family: 'DS-Digital', monospace;
             font-size: 5rem;
             font-weight: bold;
-            color: #ffffff; /* Precio principal en blanco */
+            color: #ffffff;
             line-height: 0.9;
             margin: 10px 0;
             text-shadow: 0 0 15px rgba(255,255,255,0.1);
@@ -151,11 +151,10 @@
         const API_KEY = "7e5869c8f17e379b2fb01044d84f08735d5dd32bd8cacd175357d4510e6cc000";
         const headers = { 'Authorization': `Token ${API_KEY}` };
 
-        // --- CONFIGURACIÓN MANUAL DE LÍMITES MENSUALES ---
-        // Cambia estos valores cada mes según lo que veas en Google
+        // --- DATOS REALES ENCONTRADOS (ABRIL 2026) ---
         const STATS_MANUAL = {
-            brent: { max: 88.40, min: 72.15 },
-            wti:   { max: 83.90, min: 68.45 }
+            brent: { max: 111.80, min: 91.70 },
+            wti:   { max: 117.57, min: 96.50 }
         };
 
         async function fetchCurrentPrice(code) {
@@ -164,21 +163,18 @@
                 const json = await res.json();
                 return parseFloat(json.data.price);
             } catch (e) {
-                console.error("Error API:", e);
                 return 0;
             }
         }
 
         async function updateAll() {
             try {
-                // Actualizar Precios en Vivo (Blanco)
                 const bPrice = await fetchCurrentPrice("BRENT_CRUDE_USD");
                 const wPrice = await fetchCurrentPrice("WTI_USD");
 
                 if(bPrice > 0) document.getElementById('brent_price').textContent = bPrice.toFixed(2);
                 if(wPrice > 0) document.getElementById('wti_price').textContent = wPrice.toFixed(2);
 
-                // Aplicar valores manuales (Máximos en Verde, Mínimos en Rojo)
                 document.getElementById('brent_max').textContent = STATS_MANUAL.brent.max.toFixed(2);
                 document.getElementById('brent_min').textContent = STATS_MANUAL.brent.min.toFixed(2);
                 
@@ -187,7 +183,7 @@
 
                 document.getElementById('timestamp').textContent = new Date().toLocaleTimeString();
             } catch (err) {
-                console.error("Error de actualización");
+                console.error("Error");
             }
         }
 

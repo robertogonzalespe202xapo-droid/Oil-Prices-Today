@@ -70,9 +70,10 @@
             font-family: 'DS-Digital', monospace;
             font-size: 5rem;
             font-weight: bold;
-            color: #ffffff;
+            color: #ffffff; /* Precio principal en blanco */
             line-height: 0.9;
             margin: 10px 0;
+            text-shadow: 0 0 15px rgba(255,255,255,0.1);
         }
 
         .stat-box {
@@ -150,51 +151,46 @@
         const API_KEY = "7e5869c8f17e379b2fb01044d84f08735d5dd32bd8cacd175357d4510e6cc000";
         const headers = { 'Authorization': `Token ${API_KEY}` };
 
-        async function fetchMonthStats(code) {
-            const now = new Date();
-            const firstDay = new Date(now.getFullYear(), now.getMonth(), 1).toISOString().split('T')[0];
-            // Obtenemos estadísticas del mes actual
-            const url = `https://api.oilpriceapi.com/v1/prices/stats?by_code=${code}&from=${firstDay}`;
-            
-            try {
-                const res = await fetch(url, { headers });
-                const json = await res.json();
-                return {
-                    max: json.data.max_price || 0,
-                    min: json.data.min_price || 0
-                };
-            } catch (e) { return { max: 0, min: 0 }; }
-        }
+        // --- CONFIGURACIÓN MANUAL DE LÍMITES MENSUALES ---
+        // Cambia estos valores cada mes según lo que veas en Google
+        const STATS_MANUAL = {
+            brent: { max: 88.40, min: 72.15 },
+            wti:   { max: 83.90, min: 68.45 }
+        };
 
         async function fetchCurrentPrice(code) {
-            const res = await fetch(`https://api.oilpriceapi.com/v1/prices/latest?by_code=${code}`, { headers });
-            const json = await res.json();
-            return parseFloat(json.data.price);
+            try {
+                const res = await fetch(`https://api.oilpriceapi.com/v1/prices/latest?by_code=${code}`, { headers });
+                const json = await res.json();
+                return parseFloat(json.data.price);
+            } catch (e) {
+                console.error("Error API:", e);
+                return 0;
+            }
         }
 
         async function updateAll() {
             try {
-                // Actualizar Brent
+                // Actualizar Precios en Vivo (Blanco)
                 const bPrice = await fetchCurrentPrice("BRENT_CRUDE_USD");
-                const bStats = await fetchMonthStats("BRENT_CRUDE_USD");
-                document.getElementById('brent_price').textContent = bPrice.toFixed(2);
-                document.getElementById('brent_max').textContent = bStats.max.toFixed(2);
-                document.getElementById('brent_min').textContent = bStats.min.toFixed(2);
-
-                // Actualizar WTI
                 const wPrice = await fetchCurrentPrice("WTI_USD");
-                const wStats = await fetchMonthStats("WTI_USD");
-                document.getElementById('wti_price').textContent = wPrice.toFixed(2);
-                document.getElementById('wti_max').textContent = wStats.max.toFixed(2);
-                document.getElementById('wti_min').textContent = wStats.min.toFixed(2);
+
+                if(bPrice > 0) document.getElementById('brent_price').textContent = bPrice.toFixed(2);
+                if(wPrice > 0) document.getElementById('wti_price').textContent = wPrice.toFixed(2);
+
+                // Aplicar valores manuales (Máximos en Verde, Mínimos en Rojo)
+                document.getElementById('brent_max').textContent = STATS_MANUAL.brent.max.toFixed(2);
+                document.getElementById('brent_min').textContent = STATS_MANUAL.brent.min.toFixed(2);
+                
+                document.getElementById('wti_max').textContent = STATS_MANUAL.wti.max.toFixed(2);
+                document.getElementById('wti_min').textContent = STATS_MANUAL.wti.min.toFixed(2);
 
                 document.getElementById('timestamp').textContent = new Date().toLocaleTimeString();
             } catch (err) {
-                console.error("Error de conexión");
+                console.error("Error de actualización");
             }
         }
 
-        // Ejecutar al cargar y cada 30 segundos (para no agotar la API rápidamente)
         updateAll();
         setInterval(updateAll, 30000);
     </script>

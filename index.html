@@ -3,14 +3,13 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Oil Tracker Pro • 2026</title>
+    <title>Oil Tracker Pro • LIVE</title>
     
     <style>
         :root {
             --neon-blue: #00f0ff;
             --neon-green: #00ff9d;
             --neon-red: #ff2d55;
-            --card-bg: #0c111b;
             --rgb-speed: 3s;
         }
 
@@ -28,7 +27,6 @@
             position: relative;
         }
 
-        /* EFECTO AGUA BRILLANTE */
         body::before {
             content: "";
             position: absolute;
@@ -59,24 +57,13 @@
             border-radius: 28px;
             margin-bottom: 25px;
             overflow: hidden;
-            display: flex;
-            justify-content: center;
-            align-items: center;
         }
 
         .card-wrapper::before {
             content: "";
             position: absolute;
-            width: 150%;
-            height: 150%;
-            background: conic-gradient(
-                from 0deg,
-                transparent 0%,
-                var(--neon-blue) 25%,
-                var(--neon-green) 50%,
-                var(--neon-blue) 75%,
-                transparent 100%
-            );
+            top: -25%; left: -25%; width: 150%; height: 150%;
+            background: conic-gradient(from 0deg, transparent 0%, var(--neon-blue) 25%, var(--neon-green) 50%, var(--neon-blue) 75%, transparent 100%);
             animation: rotateRGB var(--rgb-speed) linear infinite;
         }
 
@@ -89,23 +76,10 @@
             background: rgba(12, 17, 27, 0.95);
             border-radius: 25px;
             padding: 25px;
-            width: 100%;
+            position: relative;
             z-index: 2;
             backdrop-filter: blur(15px);
             text-align: center;
-        }
-
-        .header {
-            text-align: center;
-            margin-bottom: 30px;
-        }
-
-        .header h1 {
-            font-size: 1.1rem;
-            letter-spacing: 5px;
-            color: var(--neon-blue);
-            text-shadow: 0 0 15px var(--neon-blue);
-            text-transform: uppercase;
         }
 
         .label {
@@ -121,25 +95,28 @@
             font-family: 'Courier New', monospace;
             font-size: 4.2rem;
             font-weight: 900;
-            color: #fff;
             line-height: 1;
+            transition: 0.3s;
         }
 
-        .change {
-            font-size: 1rem;
-            font-weight: bold;
+        /* Animación cuando el precio cambia */
+        .price-update {
+            animation: flashUpdate 0.5s ease-out;
+        }
+
+        @keyframes flashUpdate {
+            0% { filter: brightness(3); transform: scale(1.05); }
+            100% { filter: brightness(1); transform: scale(1); }
+        }
+
+        .status-tag {
+            font-size: 0.6rem;
+            padding: 3px 8px;
+            border-radius: 5px;
+            background: rgba(0, 255, 157, 0.1);
+            color: var(--neon-green);
             margin-top: 10px;
-            font-family: 'Courier New', monospace;
-        }
-
-        .positive { color: var(--neon-green); }
-        .negative { color: var(--neon-red); }
-
-        .status-bar {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-top: 15px;
+            display: inline-block;
         }
 
         .btn {
@@ -152,93 +129,59 @@
             font-size: 0.7rem;
             font-weight: bold;
             text-transform: uppercase;
-            transition: 0.3s;
         }
 
-        .btn:hover {
-            background: var(--neon-blue);
-            color: #000;
-            box-shadow: 0 0 20px var(--neon-blue);
-        }
-
-        .modal {
-            display: none;
-            position: fixed;
-            top: 0; left: 0; width: 100%; height: 100%;
-            background: rgba(5, 10, 20, 0.9);
-            z-index: 1000;
-            align-items: center;
-            justify-content: center;
-            backdrop-filter: blur(10px);
-        }
-
-        .modal-content {
-            background: #0c111b;
-            width: 85%;
-            max-width: 400px;
-            padding: 25px;
-            border-radius: 20px;
-            border: 1px solid var(--neon-blue);
-        }
-
-        .console {
+        .console-box {
             background: #000;
             font-family: 'Courier New', monospace;
             padding: 15px;
-            height: 250px;
+            height: 150px;
             overflow-y: auto;
-            font-size: 0.75rem;
+            font-size: 0.7rem;
             color: var(--neon-green);
-            border-radius: 10px;
-            margin: 15px 0;
+            border-radius: 15px;
+            margin-top: 20px;
             border: 1px solid #1f2a3f;
+            display: none;
         }
     </style>
 </head>
 <body>
 
     <div class="container">
-        <div class="header">
-            <h1>Oil Tracker Pro</h1>
-            <div id="update-timer" style="font-size: 0.65rem; color: #456; margin-top: 5px;">Sincronizando...</div>
-        </div>
+        <header style="text-align: center; margin-bottom: 20px;">
+            <h1 style="font-size: 1rem; letter-spacing: 4px; color: var(--neon-blue);">LIVE FEED :: 2026</h1>
+            <div id="socket-status" style="font-size: 0.6rem; color: #456;">CONECTANDO AL CABLE...</div>
+        </header>
 
         <div class="card-wrapper">
             <div class="card">
-                <span class="label">BRENT OIL (USD)</span>
-                <div id="brent_price" class="price-main">--.--</div>
-                <div id="brent_change" class="change">--</div>
+                <span class="label">BRENT CRUDE</span>
+                <div id="brent-val" class="price-main">00.00</div>
+                <div class="status-tag">REAL-TIME DATA</div>
             </div>
         </div>
 
         <div class="card-wrapper">
             <div class="card">
-                <span class="label">WTI OIL (USD)</span>
-                <div id="wti_price" class="price-main">--.--</div>
-                <div id="wti_change" class="change">--</div>
+                <span class="label">WTI CRUDE</span>
+                <div id="wti-val" class="price-main">00.00</div>
+                <div class="status-tag">REAL-TIME DATA</div>
             </div>
         </div>
 
-        <div class="status-bar">
-            <button class="btn" onclick="fetchPrices()">Actualizar</button>
-            <button class="btn" onclick="toggleModal()">Logs</button>
+        <div style="text-align: center;">
+            <button class="btn" onclick="toggleConsole()">Monitor del Sistema</button>
         </div>
-    </div>
 
-    <div id="modal" class="modal">
-        <div class="modal-content">
-            <h2 style="font-size: 1rem; color: var(--neon-blue)">System Console</h2>
-            <div id="console" class="console"></div>
-            <button class="btn" style="width: 100%" onclick="toggleModal()">Cerrar</button>
-        </div>
+        <div id="console" class="console-box"></div>
     </div>
 
     <script>
-        const API_KEY = "d0fe91b38b11caf283f0fe96e05992e7f3807eae0455325cd76e1f988477b685";
-        // Endpoint actualizado según la documentación oficial
-        const BASE_URL = "https://api.oilpriceapi.com/v1/prices/latest"; 
-
-        let cache = { brent: null, wti: null };
+        const TOKEN = "d0fe91b38b11caf283f0fe96e05992e7f3807eae0455325cd76e1f988477b685";
+        const WS_URL = `wss://api.oilpriceapi.com/cable?token=${TOKEN}`;
+        
+        let ws;
 
         function log(msg) {
             const c = document.getElementById('console');
@@ -247,89 +190,74 @@
             c.scrollTop = c.scrollHeight;
         }
 
-        async function fetchPrices() {
-            log("Conectando con OilPriceAPI...");
+        function initWebSocket() {
+            ws = new WebSocket(WS_URL);
+
+            ws.onopen = () => {
+                log('Conexión establecida con el servidor.');
+                document.getElementById('socket-status').innerText = "CONECTADO - TRANSMITIENDO";
+                document.getElementById('socket-status').style.color = "#00ff9d";
+                
+                // Suscribirse al canal
+                ws.send(JSON.stringify({
+                    command: 'subscribe',
+                    identifier: JSON.stringify({ channel: 'EnergyPricesChannel' })
+                }));
+            };
+
+            ws.onmessage = (event) => {
+                const msg = JSON.parse(event.data);
+
+                if (msg.type === 'ping') return;
+                
+                if (msg.type === 'confirm_subscription') {
+                    log('Suscripción confirmada: EnergyPricesChannel');
+                    return;
+                }
+
+                if (msg.message && msg.message.prices) {
+                    const data = msg.message.prices;
+                    log('Nuevos precios recibidos.');
+                    
+                    if(data.oil) {
+                        updateUI('brent-val', data.oil.brent?.original_price);
+                        updateUI('wti-val', data.oil.wti?.original_price);
+                    }
+                }
+            };
+
+            ws.onerror = (err) => {
+                log('Error de conexión WebSocket.');
+                document.getElementById('socket-status').innerText = "ERROR DE CONEXIÓN";
+                document.getElementById('socket-status').style.color = "#ff2d55";
+            };
+
+            ws.onclose = () => {
+                log('Conexión cerrada. Reintentando en 5s...');
+                setTimeout(initWebSocket, 5000);
+            };
+        }
+
+        function updateUI(id, value) {
+            if (!value) return;
+            const el = document.getElementById(id);
+            const formattedValue = value.toFixed(2);
             
-            // Usamos una configuración de headers más limpia
-            const headers = new Headers();
-            headers.append("Authorization", `Token ${API_KEY}`);
-
-            try {
-                // Brent - Eliminamos parámetros extra que puedan causar el 400
-                const resB = await fetch(`${BASE_URL}?by_code=BRENT_CRUDE`, {
-                    method: 'GET',
-                    headers: headers
-                });
-                
-                // WTI
-                const resW = await fetch(`${BASE_URL}?by_code=WTI_CRUDE`, {
-                    method: 'GET',
-                    headers: headers
-                });
-
-                if (!resB.ok || !resW.ok) {
-                    throw new Error(`Error en servidor: B(${resB.status}) W(${resW.status})`);
-                }
-
-                const dataB = await resB.json();
-                const dataW = await resW.json();
-
-                if (dataB.data && dataW.data) {
-                    processUpdate('brent', dataB.data.price);
-                    processUpdate('wti', dataW.data.price);
-                    log("Precios cargados con éxito.");
-                } else {
-                    log("API respondió pero sin datos de precio.");
-                }
-                
-            } catch (e) {
-                log("Error Crítico: " + e.message);
-                if(e.message.includes("400")) {
-                    log("Tip: Revisa que el código BRENT_CRUDE esté habilitado en tu plan.");
-                }
+            if (el.innerText !== formattedValue) {
+                el.innerText = formattedValue;
+                el.classList.remove('price-update');
+                void el.offsetWidth; // Truco para reiniciar animación
+                el.classList.add('price-update');
             }
-            scheduleNextUpdate();
         }
 
-        function processUpdate(type, newPrice) {
-            const priceEl = document.getElementById(`${type}_price`);
-            const changeEl = document.getElementById(`${type}_change`);
-            const prevPrice = cache[type];
-
-            priceEl.innerText = newPrice.toFixed(2);
-
-            if (prevPrice) {
-                const diff = newPrice - prevPrice;
-                const pct = ((diff / prevPrice) * 100).toFixed(2);
-                const isPos = diff >= 0;
-                changeEl.className = `change ${isPos ? 'positive' : 'negative'}`;
-                changeEl.innerText = `${isPos ? '▲' : '▼'} ${Math.abs(diff).toFixed(2)} (${pct}%)`;
-            } else {
-                changeEl.innerText = "MARKET LIVE";
-            }
-            cache[type] = newPrice;
+        function toggleConsole() {
+            const c = document.getElementById('console');
+            c.style.display = c.style.display === 'block' ? 'none' : 'block';
         }
 
-        function scheduleNextUpdate() {
-            const now = new Date();
-            let nextUpdate = new Date();
-            nextUpdate.setHours(7, 0, 0, 0);
-            if (now >= nextUpdate) nextUpdate.setDate(nextUpdate.getDate() + 1);
-
-            const msUntilUpdate = nextUpdate - now;
-            const hours = Math.floor(msUntilUpdate / (1000 * 60 * 60));
-            const mins = Math.floor((msUntilUpdate / (1000 * 60)) % 60);
-
-            document.getElementById('update-timer').innerText = `Sig. carga: 07:00 AM (en ${hours}h ${mins}m)`;
-            setTimeout(fetchPrices, msUntilUpdate);
-        }
-
-        function toggleModal() {
-            const m = document.getElementById('modal');
-            m.style.display = (m.style.display === 'flex') ? 'none' : 'flex';
-        }
-
-        window.onload = fetchPrices;
+        // Iniciar sistema
+        initWebSocket();
     </script>
 </body>
 </html>

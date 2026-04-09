@@ -14,6 +14,7 @@
             --border: #1e2a40;
             --success: #00c4b4;
             --warning: #f5a623;
+            --live: #ff4757;
         }
 
         * { box-sizing: border-box; margin: 0; padding: 0; }
@@ -29,14 +30,23 @@
             padding: 20px;
         }
 
+        .main-wrapper {
+            display: flex;
+            gap: 20px;
+            width: 100%;
+            max-width: 900px;
+            flex-wrap: wrap;
+        }
+
         .container {
             background: #0a1625;
             padding: 32px 28px;
             border-radius: 28px;
             border: 1px solid var(--border);
-            width: 100%;
-            max-width: 440px;
+            flex: 1;
+            min-width: 320px;
             box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.4);
+            position: relative;
         }
 
         .header {
@@ -57,6 +67,7 @@
             margin-bottom: 24px;
             border: 1px solid var(--border);
             text-align: center;
+            transition: transform 0.3s ease;
         }
 
         .label {
@@ -72,11 +83,22 @@
         }
 
         .price-main {
-            font-family: monospace;
-            font-size: 4.2rem;
+            font-family: 'Courier New', monospace;
+            font-size: 3.5rem;
             font-weight: 500;
             color: #fff;
             margin: 12px 0 20px;
+        }
+
+        .ws-badge {
+            background: var(--live);
+            color: white;
+            font-size: 0.6rem;
+            padding: 2px 6px;
+            border-radius: 4px;
+            vertical-align: middle;
+            margin-left: 5px;
+            animation: pulse 1.5s infinite;
         }
 
         .stat-row { display: flex; gap: 12px; }
@@ -109,6 +131,7 @@
         }
         
         .dot-active { background: var(--success); animation: pulse 2s infinite; }
+        .dot-ws { background: var(--live); }
 
         @keyframes pulse { 0%, 100% { opacity: 1; } 50% { opacity: 0.4; } }
 
@@ -156,42 +179,72 @@
         .log-success { color: var(--success); }
         .log-error { color: #ff6b6b; }
         .log-info { color: #7eb8ff; }
+        .log-ws { color: var(--live); }
 
         .modal-footer { padding: 15px; display: flex; gap: 10px; }
         .modal-footer button { flex: 1; padding: 10px; border-radius: 10px; border: none; cursor: pointer; }
+
+        @media (max-width: 768px) {
+            .main-wrapper { flex-direction: column; }
+        }
     </style>
 </head>
 <body>
-    <div class="container">
-        <div class="header">
-            <h1>Oil Tracker Pro</h1>
-            <div class="header-actions">
-                <button onclick="toggleModal('historyModal')" class="btn-icon" title="Ver Historial">💾</button>
-                <button onclick="toggleModal('consoleModal')" class="btn-icon">📋</button>
+    <div class="main-wrapper">
+        <div class="container">
+            <div class="header">
+                <h1>Snapshot API</h1>
+                <div class="header-actions">
+                    <button onclick="toggleModal('historyModal')" class="btn-icon" title="Ver Historial">💾</button>
+                    <button onclick="toggleModal('consoleModal')" class="btn-icon">📋</button>
+                </div>
+            </div>
+
+            <div class="card">
+                <span class="label">● BRENT (DAILY)</span>
+                <div id="brent_price" class="price-main">--.--</div>
+                <div class="stat-row">
+                    <div class="stat-box max-box">MAX: <span id="brent_max">111.80</span></div>
+                    <div class="stat-box min-box">MIN: <span id="brent_min">91.70</span></div>
+                </div>
+            </div>
+
+            <div class="card">
+                <span class="label">● WTI (DAILY)</span>
+                <div id="wti_price" class="price-main">--.--</div>
+                <div class="stat-row">
+                    <div class="stat-box max-box">MAX: <span id="wti_max">117.57</span></div>
+                    <div class="stat-box min-box">MIN: <span id="wti_min">96.50</span></div>
+                </div>
+            </div>
+
+            <div class="status-bar">
+                <span id="modeText"><span id="statusDot" class="live-dot"></span> <span id="scheduleInfo">MODO: ESPERA</span></span>
+                <span id="timestamp">--:--:--</span>
             </div>
         </div>
 
-        <div class="card">
-            <span class="label">● BRENT CRUDE</span>
-            <div id="brent_price" class="price-main">--.--</div>
-            <div class="stat-row">
-                <div class="stat-box max-box">MAX: <span id="brent_max">111.80</span></div>
-                <div class="stat-box min-box">MIN: <span id="brent_min">91.70</span></div>
+        <div class="container" style="border-color: var(--live);">
+            <div class="header">
+                <h1>Live Stream <span class="ws-badge">LIVE</span></h1>
             </div>
-        </div>
 
-        <div class="card">
-            <span class="label">● WTI CRUDE</span>
-            <div id="wti_price" class="price-main">--.--</div>
-            <div class="stat-row">
-                <div class="stat-box max-box">MAX: <span id="wti_max">117.57</span></div>
-                <div class="stat-box min-box">MIN: <span id="wti_min">96.50</span></div>
+            <div class="card" style="background: #1a121a;">
+                <span class="label" style="color: var(--live);">● BRENT REAL-TIME</span>
+                <div id="ws_brent_price" class="price-main" style="color: var(--live);">--.--</div>
+                <div id="ws_brent_status" style="font-size: 0.7rem; color: #6b8aa8;">Esperando datos...</div>
             </div>
-        </div>
 
-        <div class="status-bar">
-            <span id="modeText"><span id="statusDot" class="live-dot"></span> <span id="scheduleInfo">MODO: ESPERA</span></span>
-            <span id="timestamp">--:--:--</span>
+            <div class="card" style="background: #1a121a;">
+                <span class="label" style="color: var(--live);">● WTI REAL-TIME</span>
+                <div id="ws_wti_price" class="price-main" style="color: var(--live);">--.--</div>
+                <div id="ws_wti_status" style="font-size: 0.7rem; color: #6b8aa8;">Esperando datos...</div>
+            </div>
+
+            <div class="status-bar">
+                <span><span id="wsDot" class="live-dot dot-ws"></span> WS: <span id="wsStatus">DESCONECTADO</span></span>
+                <span id="wsTime">--:--:--</span>
+            </div>
         </div>
     </div>
 
@@ -211,7 +264,7 @@
     <div id="historyModal" class="modal">
         <div class="modal-content">
             <div style="padding: 20px; border-bottom: 1px solid var(--border); display: flex; justify-content: space-between;">
-                <h2>💾 Historial de Precios</h2>
+                <h2>💾 Historial</h2>
                 <button onclick="toggleModal('historyModal')" style="background:none; color:white; border:none; cursor:pointer;">✕</button>
             </div>
             <div id="historyContainer" class="logs-container"></div>
@@ -223,11 +276,10 @@
 
     <script>
         const API_KEY = "d0fe91b38b11caf283f0fe96e05992e7f3807eae0455325cd76e1f988477b685";
-        
-        // Cargar datos iniciales de localStorage
         let priceHistory = JSON.parse(localStorage.getItem('oil_history')) || [];
         let lastFetchDate = localStorage.getItem('last_fetch_date') || "";
 
+        // --- LÓGICA API SNAPSHOT ---
         function addLog(msg, type = 'info') {
             const time = new Date().toLocaleTimeString();
             const container = document.getElementById('logsContainer');
@@ -237,39 +289,6 @@
             container.prepend(div);
         }
 
-        function toggleModal(id) {
-            const m = document.getElementById(id);
-            m.style.display = (m.style.display === 'flex') ? 'none' : 'flex';
-            if(id === 'historyModal') renderHistory();
-        }
-
-        function renderHistory() {
-            const container = document.getElementById('historyContainer');
-            if (priceHistory.length === 0) {
-                container.innerHTML = "<p style='text-align:center; padding:20px; color:#6b8aa8;'>No hay registros guardados.</p>";
-                return;
-            }
-            container.innerHTML = priceHistory.map(h => `
-                <div class="log-line">
-                    <div style="color:var(--accent); font-weight:bold; margin-bottom:4px;">${h.date}</div>
-                    <div style="display:flex; justify-content:space-between;">
-                        <span>Brent: $${h.brent}</span>
-                        <span>WTI: $${h.wti}</span>
-                    </div>
-                </div>
-            `).join('');
-        }
-
-        function clearHistory() {
-            if(confirm("¿Borrar todo el historial?")) {
-                priceHistory = [];
-                localStorage.removeItem('oil_history');
-                renderHistory();
-            }
-        }
-
-        function clearLogs() { document.getElementById('logsContainer').innerHTML = ""; }
-
         async function fetchPrice(code) {
             try {
                 const res = await fetch(`https://api.oilpriceapi.com/v1/prices/latest?by_code=${code}`, {
@@ -278,76 +297,118 @@
                 const data = await res.json();
                 return parseFloat(data.data.price);
             } catch (e) {
-                addLog(`Error en ${code}: ${e.message}`, "error");
+                addLog(`Error API ${code}: ${e.message}`, "error");
                 return null;
             }
         }
 
         async function updatePrices() {
-            const now = new Date();
-            const dateStr = now.toLocaleDateString();
-            
-            addLog("Solicitando datos nuevos a la API...", "info");
+            addLog("Solicitando Snapshot API...", "info");
             document.getElementById('statusDot').classList.add('dot-active');
-
             const b = await fetchPrice("BRENT_CRUDE_USD");
             const w = await fetchPrice("WTI_USD");
-
             if (b && w) {
-                // Actualizar UI
                 document.getElementById('brent_price').textContent = b.toFixed(2);
                 document.getElementById('wti_price').textContent = w.toFixed(2);
-                
-                // Guardar en historial
-                const record = { date: now.toLocaleString(), brent: b.toFixed(2), wti: w.toFixed(2) };
+                const record = { date: new Date().toLocaleString(), brent: b.toFixed(2), wti: w.toFixed(2) };
                 priceHistory.unshift(record);
-                if(priceHistory.length > 30) priceHistory.pop(); // Mantener últimos 30
-                
-                localStorage.setItem('oil_history', JSON.stringify(priceHistory));
-                localStorage.setItem('last_fetch_date', dateStr);
-                localStorage.setItem('last_brent', b.toFixed(2));
-                localStorage.setItem('last_wti', w.toFixed(2));
-
-                addLog("Datos guardados correctamente.", "success");
+                localStorage.setItem('oil_history', JSON.stringify(priceHistory.slice(0,30)));
+                addLog("Snapshot API actualizado.", "success");
             }
-            
-            setTimeout(() => {
-                document.getElementById('statusDot').classList.remove('dot-active');
-            }, 3000);
+            setTimeout(() => document.getElementById('statusDot').classList.remove('dot-active'), 2000);
+        }
+
+        // --- LÓGICA WEBSOCKET ---
+        let socket;
+        function initWebSocket() {
+            socket = new WebSocket("wss://api.oilpriceapi.com/cable");
+
+            socket.onopen = () => {
+                document.getElementById('wsStatus').textContent = "CONECTADO";
+                document.getElementById('wsStatus').style.color = "var(--success)";
+                addLog("WebSocket: Conexión establecida.", "ws");
+
+                // Suscripción al canal (Protocolo ActionCable)
+                const msg = {
+                    command: "subscribe",
+                    identifier: JSON.stringify({
+                        channel: "PriceChannel",
+                        api_key: API_KEY
+                    })
+                };
+                socket.send(JSON.stringify(msg));
+            };
+
+            socket.onmessage = (event) => {
+                const response = JSON.parse(event.data);
+                
+                // Ignorar mensajes de ping o bienvenida
+                if (response.type === "ping" || response.type === "welcome" || response.type === "confirm_subscription") return;
+
+                if (response.message) {
+                    const data = response.message;
+                    const price = parseFloat(data.price).toFixed(2);
+                    const code = data.code;
+                    const time = new Date().toLocaleTimeString();
+
+                    if (code === "BRENT_CRUDE_USD") {
+                        animatePrice('ws_brent_price', price);
+                        document.getElementById('ws_brent_status').textContent = `Actualizado: ${time}`;
+                    } else if (code === "WTI_USD") {
+                        animatePrice('ws_wti_price', price);
+                        document.getElementById('ws_wti_status').textContent = `Actualizado: ${time}`;
+                    }
+                    document.getElementById('wsTime').textContent = time;
+                }
+            };
+
+            socket.onclose = () => {
+                document.getElementById('wsStatus').textContent = "RECONECTANDO...";
+                document.getElementById('wsStatus').style.color = var(--warning);
+                setTimeout(initWebSocket, 5000); // Reintento
+            };
+        }
+
+        function animatePrice(id, newPrice) {
+            const el = document.getElementById(id);
+            el.style.transform = "scale(1.1)";
+            el.textContent = newPrice;
+            setTimeout(() => el.style.transform = "scale(1)", 200);
+        }
+
+        // --- UTILIDADES ---
+        function toggleModal(id) {
+            const m = document.getElementById(id);
+            m.style.display = (m.style.display === 'flex') ? 'none' : 'flex';
+            if(id === 'historyModal') renderHistory();
+        }
+
+        function renderHistory() {
+            const container = document.getElementById('historyContainer');
+            container.innerHTML = priceHistory.map(h => `
+                <div class="log-line">
+                    <div style="color:var(--accent); font-weight:bold;">${h.date}</div>
+                    <div style="display:flex; justify-content:space-between; font-size:0.9rem;">
+                        <span>Brent: $${h.brent}</span><span>WTI: $${h.wti}</span>
+                    </div>
+                </div>
+            `).join('') || "Sin registros.";
         }
 
         function checkSchedule() {
             const now = new Date();
-            const hours = now.getHours();
-            const mins = now.getMinutes();
-            const dateStr = now.toLocaleDateString();
-
             document.getElementById('timestamp').textContent = now.toLocaleTimeString();
-
-            // Lógica: Si son las 7:00 AM (o más) y no se ha actualizado hoy
-            if (hours >= 7 && lastFetchDate !== dateStr) {
+            if (now.getHours() >= 7 && lastFetchDate !== now.toLocaleDateString()) {
                 updatePrices();
-                lastFetchDate = dateStr; 
-            } else {
-                document.getElementById('scheduleInfo').textContent = (lastFetchDate === dateStr) 
-                    ? "ACTUALIZADO HOY" 
-                    : "PRÓX. SYNC: 07:00 AM";
+                lastFetchDate = now.toLocaleDateString();
+                localStorage.setItem('last_fetch_date', lastFetchDate);
             }
         }
 
-        // Cargar últimos datos conocidos al abrir
-        function init() {
-            const lb = localStorage.getItem('last_brent');
-            const lw = localStorage.getItem('last_wti');
-            if(lb) document.getElementById('brent_price').textContent = lb;
-            if(lw) document.getElementById('wti_price').textContent = lw;
-            
-            addLog("Sistema iniciado. Esperando ventana de las 07:00 AM.");
-            checkSchedule();
-            setInterval(checkSchedule, 1000);
-        }
-
-        init();
+        // Inicio
+        initWebSocket();
+        setInterval(checkSchedule, 1000);
+        updatePrices();
     </script>
 </body>
 </html>

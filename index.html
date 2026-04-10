@@ -250,22 +250,25 @@
 
         // --- LÓGICA WEBSOCKET ---
         let socket;
-        function connectWS() {
+function connectWS() {
             socket = new WebSocket(CONFIG.ws_url);
 
             socket.onopen = () => {
                 sysLog("WS: Connected. Sending Handshake...", "#ff4757");
                 
-                // Suscripción obligatoria para recibir datos
+                // Formateamos el identificador sin espacios internos para evitar errores de parseo en el servidor
+                const id = JSON.stringify({channel:"PriceChannel",api_key:CONFIG.key});
+                
                 const subParams = {
                     command: "subscribe",
-                    identifier: JSON.stringify({ 
-                        channel: "PriceChannel", 
-                        api_key: CONFIG.key 
-                    })
+                    identifier: id
                 };
+                
                 socket.send(JSON.stringify(subParams));
             };
+            
+            // ... resto del código igual
+        }
 
             socket.onmessage = (e) => {
                 const data = JSON.parse(e.data);

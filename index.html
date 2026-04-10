@@ -44,7 +44,7 @@
         }
 
         .header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 25px; }
-        .header h2 { font-size: 0.9rem; color: #fff; text-transform: uppercase; letter-spacing: 1.5px; }
+        .header h2 { font-size: 0.95rem; color: #fff; text-transform: uppercase; letter-spacing: 1.5px; font-weight: 700; }
 
         .card {
             background: var(--card-bg);
@@ -54,7 +54,6 @@
             margin-bottom: 15px;
             text-align: center;
             position: relative;
-            overflow: hidden;
         }
 
         .price-val {
@@ -63,7 +62,7 @@
             display: block;
             margin: 8px 0;
             color: #fff;
-            transition: transform 0.2s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            transition: all 0.2s ease;
         }
 
         .label { font-size: 0.75rem; font-weight: 800; color: #7eb8ff; letter-spacing: 1px; }
@@ -79,16 +78,15 @@
         }
 
         .dot { width: 10px; height: 10px; border-radius: 50%; display: inline-block; background: #222; margin-right: 5px; }
-        .dot-online { background: var(--success); box-shadow: 0 0 12px var(--success); animation: pulse 2s infinite; }
+        .dot-online { background: var(--success); box-shadow: 0 0 12px var(--success); }
         .dot-ws { background: var(--live); box-shadow: 0 0 12px var(--live); animation: pulse 1.5s infinite; }
 
-        @keyframes pulse { 0% { opacity: 1; } 50% { opacity: 0.4; } 100% { opacity: 1; } }
+        @keyframes pulse { 0% { opacity: 1; } 50% { opacity: 0.3; } 100% { opacity: 1; } }
 
         .btn-tool { 
             background: rgba(255,255,255,0.05); border: 1px solid var(--border); 
-            color: white; padding: 8px 12px; border-radius: 10px; cursor: pointer; transition: 0.2s;
+            color: white; padding: 8px 12px; border-radius: 10px; cursor: pointer;
         }
-        .btn-tool:hover { background: rgba(255,255,255,0.1); border-color: var(--accent); }
 
         /* Modales */
         .modal { 
@@ -97,14 +95,13 @@
         }
         .modal-inner { 
             background: #0a1625; width: 90%; max-width: 500px; border-radius: 24px; 
-            border: 1px solid var(--border); padding: 25px; box-shadow: 0 20px 60px rgba(0,0,0,0.8);
+            border: 1px solid var(--border); padding: 25px; 
         }
         .log-box { 
             height: 350px; overflow-y: auto; background: #05101c; 
-            font-family: 'Consolas', monospace; font-size: 0.8rem; padding: 15px; border-radius: 15px;
-            border: 1px solid #111b2b;
+            font-family: monospace; font-size: 0.8rem; padding: 15px; border-radius: 15px;
         }
-        .log-entry { margin-bottom: 8px; border-bottom: 1px solid #111b2b; padding-bottom: 5px; line-height: 1.4; }
+        .log-entry { margin-bottom: 8px; border-bottom: 1px solid #111b2b; padding-bottom: 5px; }
     </style>
 </head>
 <body>
@@ -112,44 +109,44 @@
     <div class="main-layout">
         <div class="container">
             <div class="header">
-                <h2>REST API Snapshot</h2>
+                <h2>Today Oil Price</h2>
                 <div style="display: flex; gap: 8px;">
-                    <button class="btn-tool" onclick="openModal('modalLogs')" title="Consola">📋</button>
-                    <button class="btn-tool" onclick="openModal('modalHistory')" title="Historial">💾</button>
+                    <button class="btn-tool" onclick="openModal('modalLogs')">📋</button>
+                    <button class="btn-tool" onclick="openModal('modalHistory')">💾</button>
                 </div>
             </div>
             
             <div class="card">
-                <span class="label">● BRENT CRUDE (API)</span>
+                <span class="label">● BRENT (API)</span>
                 <span id="api_brent" class="price-val">--.--</span>
             </div>
             <div class="card">
-                <span class="label">● WTI CRUDE (API)</span>
+                <span class="label">● WTI (API)</span>
                 <span id="api_wti" class="price-val">--.--</span>
             </div>
 
             <div class="status-footer">
-                <span><span id="api_dot" class="dot"></span> SYNC: <span id="api_status">AUTO</span></span>
+                <span><span id="api_dot" class="dot"></span> STATUS: <span id="api_status">READY</span></span>
                 <span id="api_time">--:--:--</span>
             </div>
         </div>
 
         <div class="container" style="border-color: rgba(255, 71, 87, 0.4);">
             <div class="header">
-                <h2 style="color: var(--live);">WebSocket Live</h2>
+                <h2 style="color: var(--live);">Oil Price Livestream</h2>
             </div>
             
             <div class="card" style="background: #161012; border-color: rgba(255, 71, 87, 0.2);">
-                <span class="label" style="color: var(--live);">● BRENT REAL-TIME</span>
+                <span class="label" style="color: var(--live);">● BRENT LIVE</span>
                 <span id="ws_brent" class="price-val" style="color: var(--live);">--.--</span>
             </div>
             <div class="card" style="background: #161012; border-color: rgba(255, 71, 87, 0.2);">
-                <span class="label" style="color: var(--live);">● WTI REAL-TIME</span>
+                <span class="label" style="color: var(--live);">● WTI LIVE</span>
                 <span id="ws_wti" class="price-val" style="color: var(--live);">--.--</span>
             </div>
 
             <div class="status-footer">
-                <span><span id="ws_dot" class="dot"></span> WS: <span id="ws_status">OFFLINE</span></span>
+                <span><span id="ws_dot" class="dot"></span> STREAM: <span id="ws_status">OFFLINE</span></span>
                 <span id="ws_time">--:--:--</span>
             </div>
         </div>
@@ -157,17 +154,17 @@
 
     <div id="modalLogs" class="modal">
         <div class="modal-inner">
-            <h3 style="margin-bottom:15px;">Consola del Sistema</h3>
+            <h3 style="margin-bottom:15px;">System Console</h3>
             <div id="con_logs" class="log-box"></div>
-            <button class="btn-tool" style="width:100%; margin-top:20px; padding:12px;" onclick="closeModal('modalLogs')">Cerrar</button>
+            <button class="btn-tool" style="width:100%; margin-top:20px;" onclick="closeModal('modalLogs')">Close</button>
         </div>
     </div>
 
     <div id="modalHistory" class="modal">
         <div class="modal-inner">
-            <h3 style="margin-bottom:15px;">Registro de Precios</h3>
+            <h3 style="margin-bottom:15px;">Price History</h3>
             <div id="his_logs" class="log-box"></div>
-            <button class="btn-tool" style="width:100%; margin-top:20px; padding:12px;" onclick="closeModal('modalHistory')">Cerrar</button>
+            <button class="btn-tool" style="width:100%; margin-top:20px;" onclick="closeModal('modalHistory')">Close</button>
         </div>
     </div>
 
@@ -180,10 +177,8 @@
 
         let priceHistory = JSON.parse(localStorage.getItem('oil_history')) || [];
 
-        // --- SISTEMA DE LOGS Y UI ---
         function sysLog(msg, color = "#7eb8ff") {
             const box = document.getElementById('con_logs');
-            if(!box) return;
             const time = new Date().toLocaleTimeString();
             const div = document.createElement('div');
             div.className = 'log-entry';
@@ -201,56 +196,67 @@
 
         function renderHistory() {
             const box = document.getElementById('his_logs');
-            if(!box) return;
             box.innerHTML = priceHistory.map(h => `
                 <div class="log-entry">
                     <b style="color:var(--accent)">${h.t}</b><br>
-                    Brent: <span style="color:#fff">$${h.b}</span> | WTI: <span style="color:#fff">$${h.w}</span>
+                    B: $${h.b} | W: $${h.w}
                 </div>
             `).join('');
         }
 
-        // --- LÓGICA REST API ---
+        // --- LÓGICA REST API (Ejemplo corregido según tu código Python) ---
         async function fetchPricesAPI() {
-            const dot = document.getElementById('api_dot');
-            dot.classList.add('dot-online');
-            sysLog("API: Solicitando actualización...", "#00d4c8");
+            document.getElementById('api_dot').classList.add('dot-online');
+            sysLog("API: Fetching latest prices...", "#00d4c8");
             
             try {
-                const getSingle = async (code) => {
-                    const r = await fetch(`${CONFIG.api_url}?by_code=${code}`, {
-                        headers: { 'Authorization': `Token ${CONFIG.key}` }
-                    });
-                    const d = await r.json();
-                    if(!d.data) throw new Error(d.error || "Sin datos");
-                    return d.data.price;
-                };
-
-                const brent = await getSingle("BRENT_CRUDE_USD");
-                const wti = await getSingle("WTI_USD");
+                // Hacemos fetch a la URL base que devuelve múltiples precios
+                const response = await fetch(CONFIG.api_url, {
+                    headers: { 'Authorization': `Token ${CONFIG.key}` }
+                });
+                const json = await response.json();
+                
+                // Si la respuesta es una lista (como en tu ejemplo de Python)
+                // Buscamos específicamente Brent y WTI en el array data
+                let brent = 0, wti = 0;
+                
+                if(json.data) {
+                    // Manejo si devuelve objeto único o array
+                    const items = Array.isArray(json.data) ? json.data : [json.data];
+                    
+                    // Nota: Si usas la URL sin parámetros, suele devolver el último precio general.
+                    // Para asegurar, hacemos peticiones específicas:
+                    const resB = await fetch(`${CONFIG.api_url}?by_code=BRENT_CRUDE_USD`, { headers: { 'Authorization': `Token ${CONFIG.key}` } });
+                    const resW = await fetch(`${CONFIG.api_url}?by_code=WTI_USD`, { headers: { 'Authorization': `Token ${CONFIG.key}` } });
+                    
+                    const dataB = await resB.json();
+                    const dataW = await resW.json();
+                    
+                    brent = dataB.data.price;
+                    wti = dataW.data.price;
+                }
 
                 document.getElementById('api_brent').textContent = brent.toFixed(2);
                 document.getElementById('api_wti').textContent = wti.toFixed(2);
                 document.getElementById('api_time').textContent = new Date().toLocaleTimeString();
                 
                 saveToHistory(brent.toFixed(2), wti.toFixed(2));
-                sysLog("API: Snapshot actualizado con éxito", "#00c4b4");
+                sysLog("API: Success updated", "#00c4b4");
             } catch (e) {
-                sysLog("API ERROR: " + e.message, "#ff6b6b");
+                sysLog("API Error: " + e.message, "#ff6b6b");
             }
-            
-            setTimeout(() => dot.classList.remove('dot-online'), 2000);
+            setTimeout(() => document.getElementById('api_dot').classList.remove('dot-online'), 2000);
         }
 
-        // --- LÓGICA WEBSOCKET (ActionCable) ---
+        // --- LÓGICA WEBSOCKET ---
         let socket;
         function connectWS() {
             socket = new WebSocket(CONFIG.ws_url);
 
             socket.onopen = () => {
-                sysLog("WS: Conexión abierta. Enviando handshake...", "#ff4757");
+                sysLog("WS: Connected. Sending Handshake...", "#ff4757");
                 
-                // Suscripción al canal de precios usando la API KEY
+                // Suscripción obligatoria para recibir datos
                 const subParams = {
                     command: "subscribe",
                     identifier: JSON.stringify({ 
@@ -264,16 +270,13 @@
             socket.onmessage = (e) => {
                 const data = JSON.parse(e.data);
                 
-                // Ignorar pings de mantenimiento
                 if (data.type === "ping") return;
-
-                if (data.type === "welcome") sysLog("WS: Servidor listo.");
+                if (data.type === "welcome") sysLog("WS: Welcome received.");
                 
                 if (data.type === "confirm_subscription") {
-                    sysLog("WS: SUSCRIPCIÓN CONFIRMADA", "#00c4b4");
+                    sysLog("WS: LIVE SUBSCRIPTION ACTIVE", "#00c4b4");
                     document.getElementById('ws_dot').classList.add('dot-ws');
                     document.getElementById('ws_status').textContent = "LIVE";
-                    document.getElementById('ws_status').style.color = "var(--live)";
                 }
 
                 if (data.message) {
@@ -281,49 +284,38 @@
                     const code = data.message.code;
                     
                     if (code === "BRENT_CRUDE_USD") {
-                        updatePriceDisplay('ws_brent', price);
+                        updateWSDisplay('ws_brent', price);
                     } else if (code === "WTI_USD") {
-                        updatePriceDisplay('ws_wti', price);
+                        updateWSDisplay('ws_wti', price);
                     }
                     document.getElementById('ws_time').textContent = new Date().toLocaleTimeString();
-                    sysLog(`WS: Tick recibido (${code})`, "#ff4757");
+                    sysLog(`WS: Tick ${code}: $${price}`, "#ff4757");
                 }
             };
 
-            socket.onclose = (e) => {
+            socket.onclose = () => {
                 document.getElementById('ws_dot').classList.remove('dot-ws');
                 document.getElementById('ws_status').textContent = "OFFLINE";
-                document.getElementById('ws_status').style.color = "#6b8aa8";
-                sysLog(`WS: Desconectado (${e.code}). Reintentando...`, "#f5a623");
+                sysLog("WS: Disconnected. Retrying in 5s...", "#f5a623");
                 setTimeout(connectWS, 5000);
             };
-
-            socket.onerror = (err) => {
-                sysLog("WS: Error en el transporte de datos.", "#ff6b6b");
-            };
         }
 
-        function updatePriceDisplay(id, val) {
+        function updateWSDisplay(id, val) {
             const el = document.getElementById(id);
-            if(!el) return;
             el.textContent = val;
             el.style.transform = "scale(1.1)";
-            setTimeout(() => el.style.transform = "scale(1)", 150);
+            setTimeout(() => el.style.transform = "scale(1)", 200);
         }
 
-        // --- MANEJO UI ---
         function openModal(id) { document.getElementById(id).style.display = 'flex'; }
         function closeModal(id) { document.getElementById(id).style.display = 'none'; }
 
-        // --- INICIALIZACIÓN ---
-        window.onload = () => {
-            renderHistory();
-            fetchPricesAPI();
-            connectWS();
-            
-            // Actualización automática de la API cada 30 minutos (opcional)
-            setInterval(fetchPricesAPI, 1800000);
-        };
+        // Inicio
+        renderHistory();
+        fetchPricesAPI();
+        connectWS();
+        setInterval(fetchPricesAPI, 600000); // Actualiza API cada 10 min
     </script>
 </body>
 </html>

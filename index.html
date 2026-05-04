@@ -145,7 +145,44 @@
     </div>
 </div>
 
-<script>
+<script>    async function getPrices() {
+        const statusEl = document.getElementById('status');
+        statusEl.innerText = "Sincronizando...";
+        statusEl.className = "status-badge status-loading";
+
+        try {
+            // Usamos un proxy que no requiere configuración de headers extraños
+            const apiTarget = `https://api.oilpriceapi.com/v1/prices/latest`;
+            const proxyUrl = `https://api.allorigins.win/get?url=${encodeURIComponent(apiTarget + '?by_code=BRENT_CRUDE,WTI_CRUDE')}`;
+
+            const response = await fetch(proxyUrl);
+            const outerData = await response.json();
+            
+            // AllOrigins devuelve la respuesta en .contents como string
+            const data = JSON.parse(outerData.contents);
+
+            if (data && data.status === "success") {
+                // Si la API responde con éxito, actualizamos los valores base dinámicamente
+                const prices = Array.isArray(data.data) ? data.data : [data.data.price];
+                
+                prices.forEach(item => {
+                    if (item.code === "BRENT_CRUDE") updateCard('brent', item.price, brentBase);
+                    if (item.code === "WTI_CRUDE") updateCard('wti', item.price, wtiBase);
+                });
+
+                statusEl.innerText = "Mercado en Vivo";
+                statusEl.className = "status-badge status-online";
+                document.getElementById('lastUpdate').innerText = `Real-time: ${new Date().toLocaleTimeString()}`;
+            } else {
+                throw new Error("API Limit reached");
+            }
+        } catch (error) {
+            console.error("Error en conexión:", error);
+            statusEl.innerText = "Modo Demo / Error API";
+            simulatePrices();
+        }
+    }
+    
     // Tu API Key de OilPriceAPI
     const API_KEY = '9174d08ab32510dfae1e8f52f16feaa2971bad49cdba116db530aae654d5678e';
     

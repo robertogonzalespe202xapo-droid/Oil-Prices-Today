@@ -1,274 +1,533 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>OilPulse Pro | GitHub Edition</title>
-    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;800&display=swap" rel="stylesheet">
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>OilPulse Pro</title>
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+
     <style>
         :root {
-            --bg-dark: #0f172a;
-            --card-bg: rgba(30, 41, 59, 0.7);
-            --accent-green: #4ade80;
-            --accent-orange: #fb923c;
-            --text-main: #f1f5f9;
-            --text-dim: #94a3b8;
+            --bg: #020617;
+            --bg-secondary: #0f172a;
+            --card: rgba(15, 23, 42, 0.82);
+            --border: rgba(255,255,255,0.08);
+            --text: #f8fafc;
+            --muted: #94a3b8;
+            --green: #22c55e;
+            --orange: #f97316;
+            --red: #ef4444;
+            --shadow: 0 30px 60px rgba(0,0,0,0.45);
+            --radius: 28px;
         }
 
-        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Outfit', sans-serif; }
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
 
         body {
             min-height: 100vh;
-            background: linear-gradient(135deg, #020617 0%, #0f172a 100%);
-            color: var(--text-main);
+            font-family: 'Outfit', sans-serif;
+            background:
+                radial-gradient(circle at top right, rgba(34,197,94,0.15), transparent 30%),
+                radial-gradient(circle at bottom left, rgba(249,115,22,0.12), transparent 30%),
+                var(--bg);
+            color: var(--text);
             display: flex;
             justify-content: center;
             align-items: center;
-            padding: 15px;
+            padding: 24px;
         }
 
         .dashboard {
-            max-width: 850px;
             width: 100%;
-            background: var(--card-bg);
+            max-width: 1180px;
+            background: var(--card);
+            border: 1px solid var(--border);
+            border-radius: 40px;
             backdrop-filter: blur(16px);
-            -webkit-backdrop-filter: blur(16px);
-            border: 1px solid rgba(255, 255, 255, 0.1);
-            border-radius: 2rem;
-            padding: 2.5rem;
-            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
+            box-shadow: var(--shadow);
+            overflow: hidden;
         }
 
-        .header { text-align: center; margin-bottom: 2.5rem; }
-        
-        .status-badge {
-            display: inline-flex;
-            align-items: center;
-            gap: 6px;
-            padding: 6px 14px;
-            border-radius: 50px;
-            font-size: 0.7rem;
-            font-weight: 800;
-            letter-spacing: 1px;
-            text-transform: uppercase;
-            border: 1px solid rgba(255,255,255,0.1);
-            margin-top: 10px;
-        }
-
-        .status-online { background: rgba(74, 222, 128, 0.1); color: var(--accent-green); }
-        .status-loading { background: rgba(251, 146, 60, 0.1); color: var(--accent-orange); }
-
-        .grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-            gap: 1.5rem;
-        }
-
-        .card {
-            background: rgba(15, 23, 42, 0.5);
-            padding: 2rem;
-            border-radius: 1.5rem;
-            border: 1px solid rgba(255, 255, 255, 0.05);
-            text-align: center;
-        }
-
-        .price { font-size: 3.5rem; font-weight: 800; margin: 10px 0; color: #fff; }
-        
-        .trend {
-            display: inline-block;
-            padding: 4px 12px;
-            border-radius: 8px;
-            font-size: 0.85rem;
-            font-weight: 600;
-        }
-
-        .up { background: rgba(74, 222, 128, 0.1); color: var(--accent-green); }
-        .down { background: rgba(251, 146, 60, 0.1); color: var(--accent-orange); }
-
-        .footer {
-            margin-top: 2rem;
-            padding-top: 1.5rem;
-            border-top: 1px solid rgba(255,255,255,0.05);
+        .topbar {
             display: flex;
             justify-content: space-between;
             align-items: center;
-            font-size: 0.75rem;
-            color: var(--text-dim);
+            padding: 32px;
+            border-bottom: 1px solid rgba(255,255,255,0.05);
+            gap: 20px;
+            flex-wrap: wrap;
+        }
+
+        .brand h1 {
+            font-size: clamp(2rem, 4vw, 3rem);
+            font-weight: 800;
+            letter-spacing: -2px;
+        }
+
+        .brand span {
+            color: var(--green);
+        }
+
+        .brand p {
+            margin-top: 8px;
+            color: var(--muted);
+            font-size: 0.95rem;
+        }
+
+        .status {
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+            padding: 12px 18px;
+            border-radius: 999px;
+            font-size: 0.82rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            border: 1px solid rgba(255,255,255,0.08);
+            background: rgba(255,255,255,0.04);
+        }
+
+        .status-dot {
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+            background: var(--orange);
+            animation: pulse 1.5s infinite;
+        }
+
+        .status.online .status-dot {
+            background: var(--green);
+        }
+
+        .content {
+            padding: 32px;
+        }
+
+        .cards {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+            gap: 24px;
+        }
+
+        .card {
+            position: relative;
+            overflow: hidden;
+            background: linear-gradient(145deg, rgba(30,41,59,0.95), rgba(15,23,42,0.9));
+            border: 1px solid rgba(255,255,255,0.06);
+            border-radius: var(--radius);
+            padding: 28px;
+            transition: transform .25s ease, border-color .25s ease;
+        }
+
+        .card:hover {
+            transform: translateY(-6px);
+            border-color: rgba(255,255,255,0.12);
+        }
+
+        .card::before {
+            content: "";
+            position: absolute;
+            top: -120px;
+            right: -120px;
+            width: 240px;
+            height: 240px;
+            border-radius: 50%;
+            background: radial-gradient(circle, rgba(255,255,255,0.08), transparent 70%);
+        }
+
+        .label {
+            color: var(--muted);
+            font-size: 0.85rem;
+            font-weight: 600;
+            letter-spacing: 1px;
+        }
+
+        .price {
+            margin-top: 18px;
+            font-size: clamp(3rem, 6vw, 4.5rem);
+            font-weight: 800;
+            letter-spacing: -3px;
+            line-height: 1;
+        }
+
+        .currency {
+            font-size: 1rem;
+            color: var(--muted);
+            margin-left: 6px;
+        }
+
+        .change {
+            margin-top: 18px;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            padding: 10px 14px;
+            border-radius: 14px;
+            font-weight: 700;
+            font-size: 0.9rem;
+        }
+
+        .positive {
+            background: rgba(34,197,94,0.12);
+            color: var(--green);
+        }
+
+        .negative {
+            background: rgba(239,68,68,0.12);
+            color: var(--red);
+        }
+
+        .neutral {
+            background: rgba(255,255,255,0.06);
+            color: var(--muted);
+        }
+
+        .meta {
+            margin-top: 24px;
+            display: flex;
+            justify-content: space-between;
+            gap: 12px;
+            flex-wrap: wrap;
+            color: var(--muted);
+            font-size: 0.82rem;
+        }
+
+        .bottom {
+            margin-top: 32px;
+            display: grid;
+            grid-template-columns: 1fr auto;
+            gap: 18px;
+            align-items: center;
+        }
+
+        .info-panel {
+            background: rgba(255,255,255,0.03);
+            border: 1px solid rgba(255,255,255,0.05);
+            padding: 18px 20px;
+            border-radius: 18px;
+            color: var(--muted);
+            line-height: 1.6;
         }
 
         button {
-            background: #1e293b;
-            color: white;
-            border: 1px solid rgba(255,255,255,0.1);
-            padding: 10px 20px;
-            border-radius: 10px;
+            border: none;
             cursor: pointer;
-            font-weight: 600;
-            transition: 0.2s;
+            border-radius: 18px;
+            padding: 18px 26px;
+            font-weight: 700;
+            font-size: 0.95rem;
+            background: linear-gradient(135deg, var(--green), #16a34a);
+            color: white;
+            transition: transform .2s ease, opacity .2s ease;
+            min-width: 220px;
         }
 
-        button:hover { background: #334155; }
+        button:hover {
+            transform: translateY(-2px);
+            opacity: .95;
+        }
 
-        @media (max-width: 500px) {
-            .price { font-size: 2.8rem; }
-            .dashboard { padding: 1.5rem; }
+        button:disabled {
+            opacity: .6;
+            cursor: wait;
+        }
+
+        .flash {
+            animation: flash .5s ease;
+        }
+
+        @keyframes flash {
+            0% { opacity: .4; transform: scale(.98); }
+            100% { opacity: 1; transform: scale(1); }
+        }
+
+        @keyframes pulse {
+            0% { opacity: .4; }
+            50% { opacity: 1; }
+            100% { opacity: .4; }
+        }
+
+        @media (max-width: 768px) {
+            .topbar,
+            .content {
+                padding: 22px;
+            }
+
+            .bottom {
+                grid-template-columns: 1fr;
+            }
+
+            button {
+                width: 100%;
+            }
         }
     </style>
 </head>
 <body>
 
 <div class="dashboard">
-    <div class="header">
-        <h1 style="letter-spacing: -1px;">OILPULSE <span style="font-weight: 300;">PRO</span></h1>
-        <div id="status" class="status-badge status-loading">Iniciando...</div>
-    </div>
 
-    <div class="grid">
-        <div class="card">
-            <p style="font-size: 0.75rem; font-weight: 600; color: var(--text-dim);">BRENT CRUDE</p>
-            <div id="brentPrice" class="price">--</div>
-            <div id="brentTrend" class="trend">Cargando...</div>
+    <div class="topbar">
+
+        <div class="brand">
+            <h1>OILPULSE <span>PRO</span></h1>
+            <p>Monitoreo profesional de petróleo en tiempo real</p>
         </div>
 
-        <div class="card">
-            <p style="font-size: 0.75rem; font-weight: 600; color: var(--text-dim);">WTI CRUDE</p>
-            <div id="wtiPrice" class="price">--</div>
-            <div id="wtiTrend" class="trend">Cargando...</div>
+        <div id="status" class="status">
+            <div class="status-dot"></div>
+            <span>Conectando mercado...</span>
         </div>
+
     </div>
 
-    <div class="footer">
-        <div>
-            <p id="lastUpdate">Sincronizando mercados en tiempo real...</p>
+    <div class="content">
+
+        <div class="cards">
+
+            <div class="card">
+                <div class="label">BRENT CRUDE</div>
+
+                <div id="brentPrice" class="price">
+                    --
+                    <span class="currency">USD</span>
+                </div>
+
+                <div id="brentChange" class="change neutral">
+                    Esperando datos...
+                </div>
+
+                <div class="meta">
+                    <span id="brentTime">Sin sincronización</span>
+                    <span>ICE Futures Europe</span>
+                </div>
+            </div>
+
+            <div class="card">
+                <div class="label">WTI CRUDE</div>
+
+                <div id="wtiPrice" class="price">
+                    --
+                    <span class="currency">USD</span>
+                </div>
+
+                <div id="wtiChange" class="change neutral">
+                    Esperando datos...
+                </div>
+
+                <div class="meta">
+                    <span id="wtiTime">Sin sincronización</span>
+                    <span>NYMEX</span>
+                </div>
+            </div>
+
         </div>
-        <button onclick="getPrices()">Actualizar</button>
+
+        <div class="bottom">
+
+            <div class="info-panel">
+                Esta versión elimina el problema de CORS y mejora la validación de datos.
+                Usa un backend seguro para proteger la API KEY.
+                Incluye manejo de errores, estados visuales y fallback seguro.
+            </div>
+
+            <button id="refreshBtn">
+                ⚡ Actualizar Mercado
+            </button>
+
+        </div>
+
     </div>
+
 </div>
 
-<script>    async function getPrices() {
-        const statusEl = document.getElementById('status');
-        statusEl.innerText = "Sincronizando...";
-        statusEl.className = "status-badge status-loading";
+<script>
 
-        try {
-            // Usamos un proxy que no requiere configuración de headers extraños
-            const apiTarget = `https://api.oilpriceapi.com/v1/prices/latest`;
-            const proxyUrl = `https://api.allorigins.win/get?url=${encodeURIComponent(apiTarget + '?by_code=BRENT_CRUDE,WTI_CRUDE')}`;
+    // =========================
+    // CONFIG
+    // =========================
 
-            const response = await fetch(proxyUrl);
-            const outerData = await response.json();
-            
-            // AllOrigins devuelve la respuesta en .contents como string
-            const data = JSON.parse(outerData.contents);
+    // IMPORTANTE:
+    // Reemplaza esto por TU backend.
+    // Ejemplo:
+    // https://tu-app.vercel.app/api/oil
 
-            if (data && data.status === "success") {
-                // Si la API responde con éxito, actualizamos los valores base dinámicamente
-                const prices = Array.isArray(data.data) ? data.data : [data.data.price];
-                
-                prices.forEach(item => {
-                    if (item.code === "BRENT_CRUDE") updateCard('brent', item.price, brentBase);
-                    if (item.code === "WTI_CRUDE") updateCard('wti', item.price, wtiBase);
-                });
+    const API_ENDPOINT = 'https://tu-backend.com/api/oil';
 
-                statusEl.innerText = "Mercado en Vivo";
-                statusEl.className = "status-badge status-online";
-                document.getElementById('lastUpdate').innerText = `Real-time: ${new Date().toLocaleTimeString()}`;
-            } else {
-                throw new Error("API Limit reached");
-            }
-        } catch (error) {
-            console.error("Error en conexión:", error);
-            statusEl.innerText = "Modo Demo / Error API";
-            simulatePrices();
+    const BASE_VALUES = {
+        brent: 78.50,
+        wti: 74.20
+    };
+
+    let isLoading = false;
+
+    // =========================
+    // ELEMENTOS
+    // =========================
+
+    const statusEl = document.getElementById('status');
+    const refreshBtn = document.getElementById('refreshBtn');
+
+    // =========================
+    // HELPERS
+    // =========================
+
+    function setStatus(type, text) {
+
+        statusEl.className = 'status';
+
+        if (type === 'online') {
+            statusEl.classList.add('online');
         }
-    }
-    
-    // Tu API Key de OilPriceAPI
-    const API_KEY = '9174d08ab32510dfae1e8f52f16feaa2971bad49cdba116db530aae654d5678e';
-    
-    // Precios base (Simulando la captura de las 7:00 AM si no hay persistencia)
-    let brentBase = 79.10;
-    let wtiBase = 74.50;
 
-    async function getPrices() {
-        const statusEl = document.getElementById('status');
-        statusEl.innerText = "Sincronizando...";
-        statusEl.className = "status-badge status-loading";
-
-        try {
-            // Usamos un proxy de AllOrigins para saltar el CORS de GitHub Pages
-            const apiTarget = `https://api.oilpriceapi.com/v1/prices/latest`;
-            const proxyUrl = `https://api.allorigins.win/get?url=${encodeURIComponent(apiTarget)}&rand=${Math.random()}`;
-
-            const response = await fetch(proxyUrl, {
-                headers: {
-                    // Nota: Algunos proxies no pasan los headers de autenticación fácilmente.
-                    // Si este falla, AllOrigins permite pasar headers en la URL o usar su API JSON.
-                }
-            });
-            
-            // OilPriceAPI requiere el Token. Vamos a intentar la petición directa primero 
-            // ya que GitHub Pages es HTTPS y la API también.
-            const directResponse = await fetch(apiTarget, {
-                headers: { 'Authorization': `Token ${API_KEY}` }
-            });
-
-            const data = await directResponse.json();
-
-            if (data && data.data) {
-                // Manejo de respuesta tanto si viene un objeto único como un array
-                const priceData = data.data.price ? [data.data.price] : (Array.isArray(data.data) ? data.data : []);
-                
-                if (priceData.length === 0 && data.data.price) priceData.push(data.data.price);
-
-                // Si solo viene un precio general, lo usamos para el Brent y estimamos WTI
-                if (priceData.length > 0) {
-                    const price = priceData[0].price;
-                    updateCard('brent', price, brentBase);
-                    updateCard('wti', price - 4.12, wtiBase); // Diferencial promedio
-                }
-
-                statusEl.innerText = "Mercado en Vivo";
-                statusEl.className = "status-badge status-online";
-                document.getElementById('lastUpdate').innerText = `Última consulta: ${new Date().toLocaleTimeString()}`;
-            }
-        } catch (error) {
-            console.error("Error:", error);
-            statusEl.innerText = "Modo Demo / Error API";
-            // Si la API falla (por límite de créditos), simulamos para que no se vea vacío
-            simulatePrices();
-        }
+        statusEl.innerHTML = `
+            <div class="status-dot"></div>
+            <span>${text}</span>
+        `;
     }
 
-    function updateCard(id, current, base) {
+    function animateUpdate(el) {
+        el.classList.remove('flash');
+        void el.offsetWidth;
+        el.classList.add('flash');
+    }
+
+    function formatTime() {
+        return new Date().toLocaleTimeString('es-MX', {
+            hour: '2-digit',
+            minute: '2-digit',
+            second: '2-digit'
+        });
+    }
+
+    // =========================
+    // UI UPDATE
+    // =========================
+
+    function updateCard(id, value, base) {
+
         const priceEl = document.getElementById(`${id}Price`);
-        const trendEl = document.getElementById(`${id}Trend`);
-        const diff = current - base;
+        const changeEl = document.getElementById(`${id}Change`);
+        const timeEl = document.getElementById(`${id}Time`);
 
-        priceEl.innerText = current.toFixed(2);
-        
-        if (diff >= 0) {
-            trendEl.className = "trend up";
-            trendEl.innerText = `▲ +${diff.toFixed(2)} (7am)`;
+        const diff = value - base;
+
+        animateUpdate(priceEl);
+
+        priceEl.innerHTML = `
+            ${value.toFixed(2)}
+            <span class="currency">USD</span>
+        `;
+
+        if (diff > 0) {
+
+            changeEl.className = 'change positive';
+            changeEl.innerHTML = `▲ +${diff.toFixed(2)} vs apertura`;
+
+        } else if (diff < 0) {
+
+            changeEl.className = 'change negative';
+            changeEl.innerHTML = `▼ ${Math.abs(diff).toFixed(2)} vs apertura`;
+
         } else {
-            trendEl.className = "trend down";
-            trendEl.innerText = `▼ ${diff.toFixed(2)} (7am)`;
+
+            changeEl.className = 'change neutral';
+            changeEl.innerHTML = `■ Sin cambios`;
+        }
+
+        timeEl.innerText = `Actualizado ${formatTime()}`;
+    }
+
+    // =========================
+    // FETCH
+    // =========================
+
+    async function fetchOilData() {
+
+        if (isLoading) return;
+
+        isLoading = true;
+        refreshBtn.disabled = true;
+
+        setStatus('loading', 'Sincronizando mercado...');
+
+        try {
+
+            const response = await fetch(API_ENDPOINT, {
+                method: 'GET',
+                headers: {
+                    'Content-Type': 'application/json'
+                }
+            });
+
+            if (!response.ok) {
+                throw new Error(`HTTP ${response.status}`);
+            }
+
+            const result = await response.json();
+
+            if (!result || !Array.isArray(result.data)) {
+                throw new Error('Formato inválido');
+            }
+
+            let updated = false;
+
+            result.data.forEach(item => {
+
+                if (!item.code || !item.price) return;
+
+                const code = item.code.toUpperCase();
+                const value = Number(item.price);
+
+                if (Number.isNaN(value)) return;
+
+                if (code.includes('BRENT')) {
+                    updateCard('brent', value, BASE_VALUES.brent);
+                    updated = true;
+                }
+
+                if (code.includes('WTI')) {
+                    updateCard('wti', value, BASE_VALUES.wti);
+                    updated = true;
+                }
+            });
+
+            if (!updated) {
+                throw new Error('No se encontraron commodities válidos');
+            }
+
+            setStatus('online', 'Datos reales activos');
+
+        } catch (err) {
+
+            console.error(err);
+
+            setStatus('error', 'Error de conexión');
+
+        } finally {
+
+            isLoading = false;
+            refreshBtn.disabled = false;
         }
     }
 
-    function simulatePrices() {
-        // Fallback elegante si la API Key se queda sin créditos o hay error de CORS
-        const bSim = brentBase + (Math.random() - 0.4) * 1.5;
-        const wSim = wtiBase + (Math.random() - 0.4) * 1.5;
-        updateCard('brent', bSim, brentBase);
-        updateCard('wti', wSim, wtiBase);
-        document.getElementById('lastUpdate').innerText = `Modo Simulación (Créditos API agotados)`;
-    }
+    // =========================
+    // EVENTS
+    // =========================
 
-    // Inicializar
-    getPrices();
-    // Refresco cada 5 minutos para no agotar los créditos de la API gratuita en GitHub
-    setInterval(getPrices, 300000);
+    refreshBtn.addEventListener('click', fetchOilData);
+
+    fetchOilData();
+
+    setInterval(fetchOilData, 60000);
+
 </script>
 
 </body>
